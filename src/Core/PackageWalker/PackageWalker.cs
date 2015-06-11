@@ -198,6 +198,7 @@ namespace NuGet
 
                 Debug.Assert(parentInfo != null);
 
+                
                 if (parentInfo.InitialTarget == PackageTargets.None)
                 {
                     // Update the parent target type
@@ -205,17 +206,18 @@ namespace NuGet
 
                     // If we ended up with both that means we found a dependency only packages
                     // that has a mix of solution and project level packages
-                    if (parentInfo.Target == PackageTargets.All)
-                    {
-                        throw new InvalidOperationException(NuGetResources.DependencyOnlyCannotMixDependencies);
-                    }
+                    //if (parentInfo.Target == PackageTargets.All)
+                    //{
+                    //    throw new InvalidOperationException(NuGetResources.DependencyOnlyCannotMixDependencies);
+                    //}
                 }
-
-                // Solution packages can't depend on project level packages
-                if (parentInfo.Target == PackageTargets.External && info.Target.HasFlag(PackageTargets.Project))
-                {
-                    throw new InvalidOperationException(NuGetResources.ExternalPackagesCannotDependOnProjectLevelPackages);
-                }
+                // Choco doesn't care about this at all
+                
+                //// Solution packages can't depend on project level packages
+                //if (parentInfo.Target == PackageTargets.External && info.Target.HasFlag(PackageTargets.Project))
+                //{
+                //    throw new InvalidOperationException(NuGetResources.ExternalPackagesCannotDependOnProjectLevelPackages);
+                //}
             }
         }
 
