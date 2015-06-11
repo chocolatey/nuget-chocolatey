@@ -23,7 +23,7 @@ set nugetmsbuildpathtmp="%ProgramFiles%\MSBuild\14.0\bin\msbuild"
 if exist %nugetmsbuildpathtmp% set nugetmsbuildpath=%nugetmsbuildpathtmp%
 set nugetmsbuildpathtmp="%ProgramFiles(x86)%\MSBuild\14.0\bin\msbuild"
 if exist %nugetmsbuildpathtmp% set nugetmsbuildpath=%nugetmsbuildpathtmp%
+set EnableNuGetPackageRestore=true
+%nugetmsbuildpath% Build\Build.CommandLine.proj /p:Configuration="%config%" /p:Platform="Any CPU" /p:TargetFrameworkVersion="v4.0" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Detailed /nr:false /target:GoMono
 
-set EnableNuGetPackageRestore=true 
-%nugetmsbuildpath% Build\Build.proj /p:Configuration="%config%" /p:Platform="Any CPU" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Detailed /nr:false 
 ENDLOCAL
