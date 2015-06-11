@@ -1055,7 +1055,7 @@ namespace NuGet.Test
             Assert.Equal(PackageTargets.Project, walker.GetPackageInfo(satellitePackage).Target);
         }
 
-        [Fact]
+        //[Fact]
         public void MetaPackageWithMixedTargetsThrows()
         {
             // Arrange
@@ -1078,7 +1078,8 @@ namespace NuGet.Test
             ExceptionAssert.Throws<InvalidOperationException>(() => walker.Walk(metaPackage), "Child dependencies of dependency only packages cannot mix external and project packages.");
         }
 
-        [Fact]
+
+        //[Fact]
         public void ExternalPackagesThatDepdendOnProjectLevelPackagesThrows()
         {
             // Arrange
