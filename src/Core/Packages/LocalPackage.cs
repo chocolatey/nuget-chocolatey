@@ -123,6 +123,16 @@ namespace NuGet
             set;
         }
 
+        public Uri ProjectSourceUrl { get; set; }
+        public Uri PackageSourceUrl { get; set; }
+        public Uri DocsUrl { get; set; }
+        public Uri WikiUrl { get; set; }
+        public Uri MailingListUrl { get; set; }
+        public Uri BugTrackerUrl { get; set; }
+        public IEnumerable<string> Replaces { get; set; }
+        public IEnumerable<string> Provides { get; set; }
+        public IEnumerable<string> Conflicts { get; set; }
+
         public Version MinClientVersion
         {
             get;
@@ -233,6 +243,15 @@ namespace NuGet
             ReleaseNotes = metadata.ReleaseNotes;
             Language = metadata.Language;
             Tags = metadata.Tags;
+            ProjectSourceUrl = metadata.ProjectSourceUrl;
+            PackageSourceUrl = metadata.PackageSourceUrl;
+            DocsUrl = metadata.DocsUrl;
+            WikiUrl = metadata.WikiUrl;
+            MailingListUrl = metadata.MailingListUrl;
+            BugTrackerUrl = metadata.BugTrackerUrl;
+            Replaces = metadata.Replaces;
+            Provides = metadata.Provides;
+            Conflicts = metadata.Conflicts;
             DependencySets = metadata.DependencySets;
             FrameworkAssemblies = metadata.FrameworkAssemblies;
             Copyright = metadata.Copyright;

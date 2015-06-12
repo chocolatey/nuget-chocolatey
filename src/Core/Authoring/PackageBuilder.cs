@@ -56,6 +56,9 @@ namespace NuGet
             PackageAssemblyReferences = new Collection<PackageReferenceSet>();
             Authors = new HashSet<string>();
             Owners = new HashSet<string>();
+            Replaces = new HashSet<string>();
+            Provides = new HashSet<string>();
+            Conflicts = new HashSet<string>();
             Tags = new HashSet<string>();
         }
 
@@ -149,6 +152,16 @@ namespace NuGet
             private set;
         }
 
+        public Uri ProjectSourceUrl { get; set; }
+        public Uri PackageSourceUrl { get; set; }
+        public Uri DocsUrl { get; set; }
+        public Uri WikiUrl { get; set; }
+        public Uri MailingListUrl { get; set; }
+        public Uri BugTrackerUrl { get; set; }
+        public ISet<string> Replaces { get; set; }
+        public ISet<string> Provides { get; set; }
+        public ISet<string> Conflicts { get; set; }
+
         public string Copyright
         {
             get;
@@ -200,6 +213,30 @@ namespace NuGet
             get
             {
                 return String.Join(" ", Tags);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Replaces
+        {
+            get
+            {
+                return Replaces;
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Provides
+        {
+            get
+            {
+                return Provides;
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Conflicts
+        {
+            get
+            {
+                return Conflicts;
             }
         }
 
@@ -413,6 +450,16 @@ namespace NuGet
             Copyright = metadata.Copyright;
             MinClientVersion = metadata.MinClientVersion;
 
+            ProjectSourceUrl = metadata.ProjectSourceUrl;
+            PackageSourceUrl = metadata.PackageSourceUrl;
+            DocsUrl = metadata.DocsUrl;
+            WikiUrl = metadata.WikiUrl;
+            MailingListUrl = metadata.MailingListUrl;
+            BugTrackerUrl = metadata.BugTrackerUrl;
+            Replaces.AddRange(metadata.Replaces);
+            Provides.AddRange(metadata.Provides);
+            Conflicts.AddRange(metadata.Conflicts);
+            
             if (metadata.Tags != null)
             {
                 Tags.AddRange(ParseTags(metadata.Tags));
