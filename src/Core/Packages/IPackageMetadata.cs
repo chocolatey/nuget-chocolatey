@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NuGet
 {
-    public interface IPackageMetadata : IPackageName
+    public partial interface IPackageMetadata : IPackageName
     {
         string Title { get; }
         IEnumerable<string> Authors { get; }
