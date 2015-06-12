@@ -3,7 +3,7 @@ SETLOCAL
 set config=%1
 
 if "%config%" == "" (
-   set config=debug
+   set config=release
 )
 
 REM Some unit-tests may leave nuget.config files in %TEMP% which leads to hard-to-debug failures
