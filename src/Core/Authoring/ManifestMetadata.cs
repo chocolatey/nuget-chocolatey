@@ -107,10 +107,43 @@ namespace NuGet
         [XmlElement("tags")]
         public string Tags { get; set; }
 
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("projectSourceUrl")]
+        public string ProjectSourceUrl { get; set; }
+
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("packageSourceUrl")]
+        public string PackageSourceUrl { get; set; }
+
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("docsUrl")]
+        public string DocsUrl { get; set; }
+
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("wikiUrl")]
+        public string WikiUrl { get; set; }
+
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("mailingListUrl")]
+        public string MailingListUrl { get; set; }
+
+        [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
+        [XmlElement("bugTrackerUrl")]
+        public string BugTrackerUrl { get; set; }
+
+        [XmlElement("replaces")]
+        public string Replaces { get; set; }
+
+        [XmlElement("provides")]
+        public string Provides { get; set; }
+
+        [XmlElement("conflicts")]
+        public string Conflicts { get; set; }
+
         /// <summary>
         /// This property should be used only by the XML serializer. Do not use it in code.
         /// </summary>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value", Justification="The propert setter is not supported.")]
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value", Justification = "The propert setter is not supported.")]
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "It's easier to create a list")]
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "This is needed for xml serialization")]
         [XmlArray("dependencies", IsNullable = false)]
@@ -307,6 +340,114 @@ namespace NuGet
             }
         }
 
+        Uri IPackageMetadata.ProjectSourceUrl
+        {
+            get
+            {
+                if (ProjectSourceUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(ProjectSourceUrl);
+            }
+        }
+
+        Uri IPackageMetadata.PackageSourceUrl
+        {
+            get
+            {
+                if (PackageSourceUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(PackageSourceUrl);
+            }
+        }
+
+        Uri IPackageMetadata.DocsUrl
+        {
+            get
+            {
+                if (DocsUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(DocsUrl);
+            }
+        }
+
+        Uri IPackageMetadata.WikiUrl
+        {
+            get
+            {
+                if (WikiUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(WikiUrl);
+            }
+        }
+
+        Uri IPackageMetadata.MailingListUrl
+        {
+            get
+            {
+                if (MailingListUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(MailingListUrl);
+            }
+        }
+
+        Uri IPackageMetadata.BugTrackerUrl
+        {
+            get
+            {
+                if (BugTrackerUrl == null)
+                {
+                    return null;
+                }
+                return new Uri(BugTrackerUrl);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Replaces
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Replaces))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Replaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Provides
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Provides))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Provides.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Conflicts
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Conflicts))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Conflicts.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
         IEnumerable<PackageDependencySet> IPackageMetadata.DependencySets
         {
             get
@@ -315,7 +456,7 @@ namespace NuGet
                 {
                     return Enumerable.Empty<PackageDependencySet>();
                 }
-                
+
                 var dependencySets = DependencySets.Select(CreatePackageDependencySet);
 
                 // group the dependency sets with the same target framework together.
@@ -384,7 +525,7 @@ namespace NuGet
                 {
                     yield return new ValidationResult(String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_IdMaxLengthExceeded));
                 }
-                else if(!PackageIdValidator.IsValidPackageId(Id))
+                else if (!PackageIdValidator.IsValidPackageId(Id))
                 {
                     yield return new ValidationResult(String.Format(CultureInfo.CurrentCulture, NuGetResources.InvalidPackageId, Id));
                 }
@@ -408,6 +549,41 @@ namespace NuGet
                     String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "ProjectUrl"));
             }
 
+            if (ProjectSourceUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "ProjectSourceUrl"));
+            }
+            if (PackageSourceUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "PackageSourceUrl"));
+            }
+
+            if (DocsUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "DocsUrl"));
+            }
+
+            if (WikiUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "WikiUrl"));
+            }
+
+            if (MailingListUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "MailingListUrl"));
+            }
+
+            if (BugTrackerUrl == String.Empty)
+            {
+                yield return new ValidationResult(
+                    String.Format(CultureInfo.CurrentCulture, NuGetResources.Manifest_UriCannotBeEmpty, "BugTrackerUrl"));
+            }
+
             if (RequireLicenseAcceptance && String.IsNullOrWhiteSpace(LicenseUrl))
             {
                 yield return new ValidationResult(NuGetResources.Manifest_RequireLicenseAcceptanceRequiresLicenseUrl);
@@ -425,10 +601,10 @@ namespace NuGet
                                  .Select(VersionUtility.ParseFrameworkName);
         }
 
-        private static PackageDependencySet CreatePackageDependencySet(ManifestDependencySet manifestDependencySet) 
+        private static PackageDependencySet CreatePackageDependencySet(ManifestDependencySet manifestDependencySet)
         {
             FrameworkName targetFramework = manifestDependencySet.TargetFramework == null
-                                            ? null 
+                                            ? null
                                             : VersionUtility.ParseFrameworkName(manifestDependencySet.TargetFramework);
 
             var dependencies = from d in manifestDependencySet.Dependencies
@@ -440,5 +616,7 @@ namespace NuGet
 
             return new PackageDependencySet(targetFramework, dependencies);
         }
+
+
     }
 }

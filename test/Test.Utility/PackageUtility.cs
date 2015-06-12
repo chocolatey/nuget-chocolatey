@@ -205,6 +205,15 @@ namespace NuGet.Test
             mockPackage.Setup(m => m.ReleaseNotes).Returns("");
             mockPackage.Setup(m => m.Owners).Returns(new string[0]);
             mockPackage.Setup(m => m.Copyright).Returns("");
+            mockPackage.Setup(m => m.ProjectSourceUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.PackageSourceUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.DocsUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.WikiUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.MailingListUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.BugTrackerUrl).Returns((Uri)null);
+            mockPackage.Setup(m => m.Replaces).Returns(new[] { String.Empty });
+            mockPackage.Setup(m => m.Provides).Returns(new[] { String.Empty });
+            mockPackage.Setup(m => m.Conflicts).Returns(new[] { String.Empty });
             mockPackage.Setup(m => m.MinClientVersion).Returns(minClientVersion == null ? new Version() : Version.Parse(minClientVersion));
             mockPackage.Setup(m => m.PackageAssemblyReferences).Returns(new PackageReferenceSet[0]);
             if (!listed)

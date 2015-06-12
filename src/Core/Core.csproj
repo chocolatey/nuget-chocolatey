@@ -244,6 +244,7 @@
     <Compile Include="NETPortable\ReferenceAssemblyFrameworkNameProvider.cs" />
     <Compile Include="NETPortable\ReferenceAssemblyPortableFrameworkMappings.cs" />
     <Compile Include="PackageRestoreConsent.cs" />
+    <Compile Include="Packages\IChocolateyPackageMetadata.cs" />
     <Compile Include="Packages\LocalPackage.cs" />
     <Compile Include="Packages\OptimizedZipPackage.cs" />
     <Compile Include="Packages\UnzippedPackage.cs" />
