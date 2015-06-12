@@ -173,6 +173,52 @@ namespace NuGet
             set;
         }
 
+        public Uri ProjectSourceUrl { get; set; }
+        public Uri PackageSourceUrl { get; set; }
+        public Uri DocsUrl { get; set; }
+        public Uri WikiUrl { get; set; }
+        public Uri MailingListUrl { get; set; }
+        public Uri BugTrackerUrl { get; set; }
+        public string Replaces { get; set; }
+        public string Provides { get; set; }
+        public string Conflicts { get; set; }
+
+        IEnumerable<string> IPackageMetadata.Replaces
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Replaces))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Replaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Provides
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Provides))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Provides.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        IEnumerable<string> IPackageMetadata.Conflicts
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Conflicts))
+                {
+                    return Enumerable.Empty<string>();
+                }
+                return Conflicts.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
         public string Dependencies
         {
             get;

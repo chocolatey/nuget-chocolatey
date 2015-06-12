@@ -125,6 +125,33 @@ namespace NuGet
                 case "tags":
                     manifestMetadata.Tags = value;
                     break;
+                case "projectSourceUrl":
+                    manifestMetadata.ProjectSourceUrl = value;
+                    break;
+                case "packageSourceUrl":
+                    manifestMetadata.PackageSourceUrl = value;
+                    break;
+                case "docsUrl":
+                    manifestMetadata.DocsUrl = value;
+                    break;
+                case "wikiUrl":
+                    manifestMetadata.WikiUrl = value;
+                    break;
+                case "mailingListUrl":
+                    manifestMetadata.MailingListUrl = value;
+                    break;
+                case "bugTrackerUrl":
+                    manifestMetadata.BugTrackerUrl = value;
+                    break;
+                case "replaces":
+                    manifestMetadata.Replaces = value;
+                    break;
+                case "provides":
+                    manifestMetadata.Provides = value;
+                    break;
+                case "conflicts":
+                    manifestMetadata.Conflicts = value;
+                    break;
                 case "dependencies":
                     manifestMetadata.DependencySets = ReadDependencySets(element);
                     break;
