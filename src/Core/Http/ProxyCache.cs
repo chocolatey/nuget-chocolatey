@@ -44,7 +44,7 @@ namespace NuGet
         }
 #endif
 
-        internal static ProxyCache Instance
+        public static ProxyCache Instance
         {
             get
             {
