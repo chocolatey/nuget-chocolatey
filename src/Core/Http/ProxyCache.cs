@@ -4,7 +4,7 @@ using System.Net;
 
 namespace NuGet
 {
-    internal class ProxyCache : IProxyCache
+    public class ProxyCache : IProxyCache
     {
         private const string HostKey = "http_proxy";
         private const string UserKey = "http_proxy.user";
