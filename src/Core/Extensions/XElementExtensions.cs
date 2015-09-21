@@ -159,8 +159,8 @@ namespace NuGet
                         }
                         else
                         {
-                            if (sourceChild == null)
-                            {
+                            //if (sourceChild == null)
+                            //{
                                 // If that element is null then add that node
                                 source.Add(targetChild);
 
@@ -169,7 +169,7 @@ namespace NuGet
 
                                 // when we see an element, add all the previous comments before the child element
                                 AddContents(pendingComments, newlyAddedElement.AddBeforeSelf);
-                            }
+                           // }
                         }
                     }
                 }
