@@ -159,14 +159,17 @@ namespace NuGet
                         }
                         else
                         {
-                            // If that element is null then add that node
-                            source.Add(targetChild);
+                            if (sourceChild == null)
+                            {
+                                // If that element is null then add that node
+                                source.Add(targetChild);
 
-                            var newlyAddedElement = source.Elements().Last();
-                            Debug.Assert(newlyAddedElement.Name == targetChild.Name);
+                                var newlyAddedElement = source.Elements().Last();
+                                Debug.Assert(newlyAddedElement.Name == targetChild.Name);
 
-                            // when we see an element, add all the previous comments before the child element
-                            AddContents(pendingComments, newlyAddedElement.AddBeforeSelf);
+                                // when we see an element, add all the previous comments before the child element
+                                AddContents(pendingComments, newlyAddedElement.AddBeforeSelf);
+                            }
                         }
                     }
                 }

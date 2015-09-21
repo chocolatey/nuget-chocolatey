@@ -7,7 +7,7 @@ using NuGet.Resources;
 
 namespace NuGet
 {
-    internal class XdtTransformer : IPackageFileTransformer
+    public class XdtTransformer : IPackageFileTransformer
     {
         public XdtTransformer()
         {
