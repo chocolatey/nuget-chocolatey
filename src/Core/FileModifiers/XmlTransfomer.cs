@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace NuGet
 {
-    internal class XmlTransformer : IPackageFileTransformer
+    public class XmlTransformer : IPackageFileTransformer
     {
         private readonly IDictionary<XName, Action<XElement, XElement>> _nodeActions;
 
