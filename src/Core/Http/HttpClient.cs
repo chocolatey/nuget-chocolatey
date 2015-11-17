@@ -10,6 +10,7 @@ namespace NuGet
         public event EventHandler<WebRequestEventArgs> SendingRequest = delegate { };
 
         private static ICredentialProvider _credentialProvider;
+        private static IClientCertificateProvider _certificateProvider;
         private Uri _uri;
 
         public HttpClient(Uri uri)
@@ -82,6 +83,19 @@ namespace NuGet
             }
         }
 
+        // TODO: Get rid of this. Horrid to have static properties like this especially in a code path that does not look thread safe.
+        public static IClientCertificateProvider DefaultCertificateProvider
+        {
+            get
+            {
+                return _certificateProvider ?? NullClientCertificateProvider.Instance;
+            }
+            set
+            {
+                _certificateProvider = value;
+            }
+        }
+
         public virtual WebResponse GetResponse()
         {
             Func<WebRequest> webRequestFactory = () =>
@@ -143,6 +157,10 @@ namespace NuGet
             {
                 request.Method = Method;
             }
+
+            var cert = DefaultCertificateProvider.GetCertificate(Uri);
+            if (cert != null)
+                httpRequest.ClientCertificates.Add(cert);
         }
 
         public void DownloadData(Stream targetStream)
