@@ -76,6 +76,6 @@ namespace NuGet
             = new ReadOnlyCollection<string>(new string[] { ".dll", ".exe", ".winmd" });
 
         // this overcomes ILMerge issues - https://github.com/chocolatey/choco/issues/194
-        public static readonly Version NuGetVersion = new Version(2,8,2,0); // typeof(IPackage).Assembly.GetName().Version;
+        public static readonly Version NuGetVersion = new Version(2,11,0,0); // typeof(IPackage).Assembly.GetName().Version;
     }
 }
