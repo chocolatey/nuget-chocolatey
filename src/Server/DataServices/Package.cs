@@ -99,6 +99,9 @@ namespace NuGet.Server.DataServices
             PackageReviewedDate = package.PackageReviewedDate;
             PackageApprovedDate = package.PackageApprovedDate;
             PackageReviewer = package.PackageReviewer;
+            IsDownloadCacheAvailable = package.IsDownloadCacheAvailable;
+            DownloadCacheDate = package.DownloadCacheDate;
+            DownloadCache = package.DownloadCache;
         }
 
         internal string FullPath
@@ -306,6 +309,9 @@ namespace NuGet.Server.DataServices
         public DateTime? PackageReviewedDate { get; set; }
         public DateTime? PackageApprovedDate { get; set; }
         public string PackageReviewer { get; set; }
+        public bool IsDownloadCacheAvailable { get; set; }
+        public DateTime? DownloadCacheDate { get; set; }
+        public IEnumerable<DownloadCache> DownloadCache { get; set; }
         
         #endregion
 

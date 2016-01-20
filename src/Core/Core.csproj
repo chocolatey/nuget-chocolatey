@@ -112,6 +112,7 @@
     <Compile Include="NETPortable\NetPortableProfileCollection.cs" />
     <Compile Include="NETPortable\NetPortableProfileTable.cs" />
     <Compile Include="PackageRestoreConsent.cs" />
+    <Compile Include="Packages\DownloadCache.cs" />
     <Compile Include="Packages\IChocolateyPackageMetadata.cs" />
     <Compile Include="Packages\IChocolateyServerPackageMetadata.cs" />
     <Compile Include="Packages\LocalPackage.cs" />

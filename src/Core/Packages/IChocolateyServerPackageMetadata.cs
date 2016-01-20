@@ -28,5 +28,9 @@
         DateTime? PackageReviewedDate { get;  }
         DateTime? PackageApprovedDate { get;  }
         string PackageReviewer { get;  }
+
+        bool IsDownloadCacheAvailable { get; }
+        DateTime? DownloadCacheDate { get; }
+        IEnumerable<DownloadCache> DownloadCache { get; }
     }
 }

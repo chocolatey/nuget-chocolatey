@@ -248,6 +248,9 @@ namespace NuGet.Test
             mockPackage.Setup(m => m.PackageReviewedDate).Returns((DateTime?)null);
             mockPackage.Setup(m => m.PackageApprovedDate).Returns((DateTime?)null);
             mockPackage.Setup(m => m.PackageReviewer).Returns(string.Empty);
+            mockPackage.Setup(m => m.IsDownloadCacheAvailable).Returns(false);
+            mockPackage.Setup(m => m.DownloadCacheDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.DownloadCache).Returns(Enumerable.Empty<DownloadCache>);
 
             return mockPackage.Object;
         }
