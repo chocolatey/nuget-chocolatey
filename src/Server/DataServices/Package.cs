@@ -56,6 +56,49 @@ namespace NuGet.Server.DataServices
             // set the latest flags based on the derived data
             IsAbsoluteLatestVersion = derivedData.IsAbsoluteLatestVersion;
             IsLatestVersion = derivedData.IsLatestVersion;
+          
+            //enhancements
+            if (package.ProjectSourceUrl != null)
+            {
+                ProjectSourceUrl = package.ProjectSourceUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            } 
+            if (package.PackageSourceUrl != null)
+            {
+                PackageSourceUrl = package.PackageSourceUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            } 
+            if (package.DocsUrl != null)
+            {
+                DocsUrl = package.DocsUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            } 
+            if (package.WikiUrl != null)
+            {
+                WikiUrl = package.WikiUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            } 
+            if (package.MailingListUrl != null)
+            {
+                MailingListUrl = package.MailingListUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            }
+            if (package.BugTrackerUrl != null)
+            {
+                BugTrackerUrl = package.BugTrackerUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
+            }
+
+            Replaces = package.Replaces;
+            Provides = package.Provides;
+            Conflicts = package.Conflicts;
+
+            // server metadata                
+            IsApproved = package.IsApproved;
+            PackageStatus = package.PackageStatus;
+            PackageSubmittedStatus = package.PackageSubmittedStatus;
+            PackageTestResultStatus = package.PackageTestResultStatus;
+            PackageTestResultStatusDate = package.PackageTestResultStatusDate;
+            PackageValidationResultStatus = package.PackageValidationResultStatus;
+            PackageValidationResultDate = package.PackageValidationResultDate;
+            PackageCleanupResultDate = package.PackageCleanupResultDate;
+            PackageReviewedDate = package.PackageReviewedDate;
+            PackageApprovedDate = package.PackageApprovedDate;
+            PackageReviewer = package.PackageReviewer;
         }
 
         internal string FullPath
@@ -237,6 +280,34 @@ namespace NuGet.Server.DataServices
             get;
             set;
         }
+
+        #region NuSpec Enhancements
+        public string ProjectSourceUrl { get; set; }
+        public string PackageSourceUrl { get; set; }
+        public string DocsUrl { get; set; }
+        public string WikiUrl { get; set; }
+        public string MailingListUrl { get; set; }
+        public string BugTrackerUrl { get; set; }
+        public IEnumerable<string> Replaces { get; set; }
+        public IEnumerable<string> Provides { get; set; }
+        public IEnumerable<string> Conflicts { get; set; }
+        #endregion
+
+        #region Server Metadata Only
+
+        public bool IsApproved { get; set; }
+        public string PackageStatus { get; set; }
+        public string PackageSubmittedStatus { get; set; }
+        public string PackageTestResultStatus { get; set; }
+        public DateTime? PackageTestResultStatusDate { get; set; }
+        public string PackageValidationResultStatus { get; set; }
+        public DateTime? PackageValidationResultDate { get; set; }
+        public DateTime? PackageCleanupResultDate { get; set; }
+        public DateTime? PackageReviewedDate { get; set; }
+        public DateTime? PackageApprovedDate { get; set; }
+        public string PackageReviewer { get; set; }
+        
+        #endregion
 
         private IEnumerable<string> ConvertDependencySetToStrings(PackageDependencySet dependencySet)
         {

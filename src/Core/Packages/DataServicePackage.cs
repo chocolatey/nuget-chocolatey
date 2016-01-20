@@ -72,6 +72,7 @@ namespace NuGet
             set;
         }
 
+
         public Uri ReportAbuseUrl
         {
             get;
@@ -84,13 +85,13 @@ namespace NuGet
             set;
         }
 
-        public string LicenseNames 
+        public string LicenseNames
         {
             get { return _licenseNames; }
             set
             {
                 _licenseNames = value;
-                LicenseNameCollection = 
+                LicenseNameCollection =
                     String.IsNullOrEmpty(value) ? new string[0] : value.Split(';').ToArray();
             }
         }
@@ -230,6 +231,19 @@ namespace NuGet
             get;
             set;
         }
+        public long PackageSize { get; set; }
+        public int VersionDownloadCount { get; set; }
+        public bool IsApproved { get; set; }
+        public string PackageStatus { get; set; }
+        public string PackageSubmittedStatus { get; set; }
+        public string PackageTestResultStatus { get; set; }
+        public DateTime? PackageTestResultStatusDate { get; set; }
+        public string PackageValidationResultStatus { get; set; }
+        public DateTime? PackageValidationResultDate { get; set; }
+        public DateTime? PackageCleanupResultDate { get; set; }
+        public DateTime? PackageReviewedDate { get; set; }
+        public DateTime? PackageApprovedDate { get; set; }
+        public string PackageReviewer { get; set; }
 
         public string PackageHashAlgorithm
         {

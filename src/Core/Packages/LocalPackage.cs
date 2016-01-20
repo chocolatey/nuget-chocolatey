@@ -64,23 +64,7 @@ namespace NuGet
             get;
             set;
         }
-
-        public Uri ReportAbuseUrl
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int DownloadCount
-        {
-            get
-            {
-                return -1;
-            }
-        }
-
+        
         public bool RequireLicenseAcceptance
         {
             get;
@@ -204,6 +188,145 @@ namespace NuGet
             private set;
         }
 
+        #region Server Metadata Only
+        public string PackageHash
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        public string PackageHashAlgorithm
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        public long PackageSize
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
+        public Uri ReportAbuseUrl
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int DownloadCount
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
+        public int VersionDownloadCount
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
+        public bool IsApproved
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public string PackageStatus
+        {
+            get
+            {
+                return "Unknown";
+            }
+        }
+
+        public string PackageSubmittedStatus
+        {
+            get
+            {
+                return "Unknown";
+            }
+        }
+
+        public string PackageTestResultStatus
+        {
+            get
+            {
+                return "Unknown";
+            }
+        }
+
+        public DateTime? PackageTestResultStatusDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string PackageValidationResultStatus
+        {
+            get
+            {
+                return "Unknown";
+            }
+        }
+
+        public DateTime? PackageValidationResultDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public DateTime? PackageCleanupResultDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public DateTime? PackageReviewedDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public DateTime? PackageApprovedDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string PackageReviewer
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        #endregion
+        
         public virtual IEnumerable<FrameworkName> GetSupportedFrameworks()
         {
             return FrameworkAssemblies.SelectMany(f => f.SupportedFrameworks).Distinct();

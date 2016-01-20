@@ -2,7 +2,7 @@
 
 namespace NuGet
 {
-    public interface IServerPackageMetadata
+    public partial interface IServerPackageMetadata
     {
         Uri ReportAbuseUrl { get; }
         int DownloadCount { get; }
