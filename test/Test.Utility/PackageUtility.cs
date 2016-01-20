@@ -205,6 +205,7 @@ namespace NuGet.Test
             mockPackage.Setup(m => m.ReleaseNotes).Returns("");
             mockPackage.Setup(m => m.Owners).Returns(new string[0]);
             mockPackage.Setup(m => m.Copyright).Returns("");
+            //enhancements
             mockPackage.Setup(m => m.ProjectSourceUrl).Returns((Uri)null);
             mockPackage.Setup(m => m.PackageSourceUrl).Returns((Uri)null);
             mockPackage.Setup(m => m.DocsUrl).Returns((Uri)null);
@@ -234,6 +235,19 @@ namespace NuGet.Test
 
             var targetFramework = allFiles.Select(f => f.TargetFramework).Where(f => f != null);
             mockPackage.Setup(m => m.GetSupportedFrameworks()).Returns(targetFramework);
+
+            //server metatadata
+            mockPackage.Setup(m => m.IsApproved).Returns(false);
+            mockPackage.Setup(m => m.PackageStatus).Returns("Unknown");
+            mockPackage.Setup(m => m.PackageSubmittedStatus).Returns("Unknown");
+            mockPackage.Setup(m => m.PackageTestResultStatus).Returns("Unknown");
+            mockPackage.Setup(m => m.PackageTestResultStatusDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.PackageValidationResultStatus).Returns("Unknown");
+            mockPackage.Setup(m => m.PackageValidationResultDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.PackageCleanupResultDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.PackageReviewedDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.PackageApprovedDate).Returns((DateTime?)null);
+            mockPackage.Setup(m => m.PackageReviewer).Returns(string.Empty);
 
             return mockPackage.Object;
         }
