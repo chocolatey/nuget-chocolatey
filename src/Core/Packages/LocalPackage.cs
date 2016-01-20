@@ -325,6 +325,30 @@ namespace NuGet
             }
         }
 
+        public bool IsDownloadCacheAvailable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public DateTime? DownloadCacheDate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<DownloadCache> DownloadCache
+        {
+            get
+            {
+                return Enumerable.Empty<DownloadCache>();
+            }
+        }
+
         #endregion
         
         public virtual IEnumerable<FrameworkName> GetSupportedFrameworks()

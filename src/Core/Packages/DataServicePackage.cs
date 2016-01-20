@@ -226,11 +226,9 @@ namespace NuGet
             set;
         }
 
-        public string PackageHash
-        {
-            get;
-            set;
-        }
+        public string PackageHash { get; set; }
+        public string PackageHashAlgorithm { get; set; }
+
         public long PackageSize { get; set; }
         public int VersionDownloadCount { get; set; }
         public bool IsApproved { get; set; }
@@ -244,11 +242,38 @@ namespace NuGet
         public DateTime? PackageReviewedDate { get; set; }
         public DateTime? PackageApprovedDate { get; set; }
         public string PackageReviewer { get; set; }
+        public bool IsDownloadCacheAvailable { get; set; }
+        public DateTime? DownloadCacheDate { get; set; }
+        public string DownloadCache { get; set; }
 
-        public string PackageHashAlgorithm
+        IEnumerable<DownloadCache> IServerPackageMetadata.DownloadCache
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrEmpty(DownloadCache))
+                {
+                    return Enumerable.Empty<DownloadCache>();
+                }
+
+                var cache = new List<DownloadCache>();
+                foreach (var downloadString in DownloadCache.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).ToList())
+                {
+                    if (downloadString.Contains("^"))
+                    {
+                        var cacheValues = downloadString.Split(new[] { '^' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (cacheValues.Count() < 3) continue;
+
+                        cache.Add(new DownloadCache
+                        {
+                            OriginalUrl = cacheValues[0],
+                            FileName = cacheValues[1],
+                            Checksum = cacheValues[2]
+                        });
+                    }
+                }
+
+                return cache;
+            }
         }
 
         public bool IsLatestVersion
@@ -347,7 +372,7 @@ namespace NuGet
 
         public ICollection<PackageReferenceSet> PackageAssemblyReferences
         {
-            get 
+            get
             {
                 return Package.PackageAssemblyReferences;
             }
@@ -537,7 +562,7 @@ namespace NuGet
 
             // Trim the id
             string id = tokens[0].Trim();
-            
+
             IVersionSpec versionSpec = null;
             if (tokens.Length > 1)
             {
