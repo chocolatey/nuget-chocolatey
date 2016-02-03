@@ -83,9 +83,9 @@ namespace NuGet.Server.DataServices
                 BugTrackerUrl = package.BugTrackerUrl.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
             }
 
-            Replaces = package.Replaces;
-            Provides = package.Provides;
-            Conflicts = package.Conflicts;
+            Replaces = String.Join(",", package.Replaces);
+            Provides = String.Join(",", package.Provides);
+            Conflicts = String.Join(",", package.Conflicts);
 
             // server metadata                
             IsApproved = package.IsApproved;
@@ -101,7 +101,7 @@ namespace NuGet.Server.DataServices
             PackageReviewer = package.PackageReviewer;
             IsDownloadCacheAvailable = package.IsDownloadCacheAvailable;
             DownloadCacheDate = package.DownloadCacheDate;
-            DownloadCache = package.DownloadCache;
+            DownloadCache = String.Join("|", package.DownloadCache.Select(ConvertDownloadCacheToStrings));
         }
 
         internal string FullPath
@@ -291,9 +291,9 @@ namespace NuGet.Server.DataServices
         public string WikiUrl { get; set; }
         public string MailingListUrl { get; set; }
         public string BugTrackerUrl { get; set; }
-        public IEnumerable<string> Replaces { get; set; }
-        public IEnumerable<string> Provides { get; set; }
-        public IEnumerable<string> Conflicts { get; set; }
+        public string Replaces { get; set; }
+        public string Provides { get; set; }
+        public string Conflicts { get; set; }
         #endregion
 
         #region Server Metadata Only
@@ -311,9 +311,14 @@ namespace NuGet.Server.DataServices
         public string PackageReviewer { get; set; }
         public bool IsDownloadCacheAvailable { get; set; }
         public DateTime? DownloadCacheDate { get; set; }
-        public IEnumerable<DownloadCache> DownloadCache { get; set; }
+        public string DownloadCache { get; set; }
         
         #endregion
+
+        private string ConvertDownloadCacheToStrings(DownloadCache cache)
+        {
+            return String.Format("{0}^{1}^{2}", cache.OriginalUrl, cache.FileName, cache.Checksum);
+        }
 
         private IEnumerable<string> ConvertDependencySetToStrings(PackageDependencySet dependencySet)
         {
