@@ -132,6 +132,11 @@ namespace NuGet
 
         public static Manifest Create(IPackageMetadata metadata)
         {
+            return CreateManifestWithMetadata(metadata);
+        }
+
+        private static Manifest CreateManifestWithMetadata(IPackageMetadata metadata)
+        {
             return new Manifest
             {
                 Metadata = new ManifestMetadata
@@ -173,33 +178,10 @@ namespace NuGet
         {
             var metadata = (IPackageMetadata)packageBuilder;
 
-            return new Manifest
-            {
-                Metadata = new ManifestMetadata
-                {
-                    Id = metadata.Id.SafeTrim(),
-                    Version = metadata.Version.ToStringSafe(),
-                    Title = metadata.Title.SafeTrim(),
-                    Authors = GetCommaSeparatedString(metadata.Authors),
-                    Owners = GetCommaSeparatedString(metadata.Owners) ?? GetCommaSeparatedString(metadata.Authors),
-                    Tags = String.IsNullOrEmpty(metadata.Tags) ? null : metadata.Tags.SafeTrim(),
-                    LicenseUrl = ConvertUrlToStringSafe(metadata.LicenseUrl),
-                    ProjectUrl = ConvertUrlToStringSafe(metadata.ProjectUrl),
-                    IconUrl = ConvertUrlToStringSafe(metadata.IconUrl),
-                    RequireLicenseAcceptance = metadata.RequireLicenseAcceptance,
-                    DevelopmentDependency = metadata.DevelopmentDependency,
-                    Description = metadata.Description.SafeTrim(),
-                    Copyright = metadata.Copyright.SafeTrim(),
-                    Summary = metadata.Summary.SafeTrim(),
-                    ReleaseNotes = metadata.ReleaseNotes.SafeTrim(),
-                    Language = metadata.Language.SafeTrim(),
-                    DependencySets = CreateDependencySets(metadata),
-                    FrameworkAssemblies = CreateFrameworkAssemblies(metadata),
-                    ReferenceSets = CreateReferenceSets(metadata),
-                    MinClientVersionString = metadata.MinClientVersion.ToStringSafe(),
-                    ContentFiles = packageBuilder.ContentFiles.ToList()
-                },
-            };
+            var manifest = CreateManifestWithMetadata(metadata);
+            manifest.Metadata.ContentFiles = packageBuilder.ContentFiles.ToList();
+
+            return manifest;
         }
 
         private static string ConvertUrlToStringSafe(Uri url)
