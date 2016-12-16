@@ -51,7 +51,7 @@ namespace NuGet
             }
 
             var builder = new StringBuilder();
-            foreach (var resource in resourceNames.Split(';'))
+            foreach (var resource in resourceNames.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var culture = LocalizedResourceManager.GetLanguageName();
                 string value = resourceManager.GetString(resource + '_' + culture, CultureInfo.InvariantCulture) ??

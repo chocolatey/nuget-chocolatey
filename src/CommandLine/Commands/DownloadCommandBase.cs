@@ -43,7 +43,7 @@ namespace NuGet.Commands
             EffectivePackageSaveMode = PackageSaveModes.None;
             if (!string.IsNullOrEmpty(packageSaveModeValue))
             {
-                foreach (var v in packageSaveModeValue.Split(';'))
+                foreach (var v in packageSaveModeValue.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (v.Equals(PackageSaveModes.Nupkg.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
