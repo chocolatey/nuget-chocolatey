@@ -8,6 +8,7 @@ namespace NuGet.Server.Infrastructure
     {
         public long PackageSize { get; set; }
         public string PackageHash { get; set; }
+        public string PackageSource { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset Created { get; set; }
         public string Path { get; set; }

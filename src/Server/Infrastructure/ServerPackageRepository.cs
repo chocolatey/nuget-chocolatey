@@ -311,6 +311,7 @@ namespace NuGet.Server.Infrastructure
                     {
                         PackageSize = fileLength,
                         PackageHash = Convert.ToBase64String(hashBytes),
+                        PackageSource = this.Source,
                         LastUpdated = _fileSystem.GetLastModified(path),
                         Created = _fileSystem.GetCreated(path),
                         Path = path,
