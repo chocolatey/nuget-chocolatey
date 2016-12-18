@@ -5,7 +5,7 @@ using NuGet.Resources;
 
 namespace NuGet
 {
-    public class PackageDownloader : IHttpClientEvents
+    public class PackageDownloader : IPackageDownloader 
     {
         private const string DefaultUserAgentClient = "NuGet Core";
 
@@ -15,7 +15,7 @@ namespace NuGet
         public string CurrentDownloadPackageId
         {
             get;
-            private set;
+            protected set;
         }
 
         public virtual void DownloadPackage(Uri uri, IPackageMetadata package, Stream targetStream)
@@ -32,7 +32,7 @@ namespace NuGet
             DownloadPackage(downloadClient, package, targetStream);
         }
 
-        public void DownloadPackage(IHttpClient downloadClient, IPackageName package, Stream targetStream)
+        public virtual void DownloadPackage(IHttpClient downloadClient, IPackageName package, Stream targetStream)
         {
             if (downloadClient == null)
             {
@@ -68,12 +68,12 @@ namespace NuGet
             }
         }
 
-        private void OnPackageDownloadProgress(ProgressEventArgs e)
+        protected virtual void OnPackageDownloadProgress(ProgressEventArgs e)
         {
             ProgressAvailable(this, e);
         }
 
-        private void OnSendingRequest(object sender, WebRequestEventArgs webRequestArgs)
+        protected virtual void OnSendingRequest(object sender, WebRequestEventArgs webRequestArgs)
         {
             SendingRequest(this, webRequestArgs);
         }
