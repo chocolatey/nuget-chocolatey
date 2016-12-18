@@ -97,13 +97,13 @@ namespace NuGet.ServerExtensions
             {
                 if (TargetRepository.Exists(package))
                 {
-                    Logger.Log(MessageLevel.Info, NuGetResources.Log_PackageAlreadyPresent, p.GetFullName(), TargetRepository.Source);
+                    Logger.Log(MessageLevel.Verbose, NuGetResources.Log_PackageAlreadyPresent, p.GetFullName(), TargetRepository.Source);
                 }
                 else
                 {
                     ExecuteMirror(p);
                     countMirrored++;
-                    Logger.Log(MessageLevel.Info, NuGetResources.Log_PackageMirroredSuccessfully, p.GetFullName(), TargetRepository.Source);
+                    Logger.Log(MessageLevel.Verbose, NuGetResources.Log_PackageMirroredSuccessfully, p.GetFullName(), TargetRepository.Source);
                 }
             }
 

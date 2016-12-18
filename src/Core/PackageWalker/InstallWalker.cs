@@ -389,7 +389,7 @@ namespace NuGet
 
         protected override IPackage ResolveDependency(PackageDependency dependency)
         {
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_AttemptingToRetrievePackageFromSource, dependency);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_AttemptingToRetrievePackageFromSource, dependency);
 
             // First try to get a local copy of the package
             // Bug1638: Include prereleases when resolving locally installed dependencies.
