@@ -125,7 +125,7 @@ namespace NuGet.Commands
         {
             BuildProject();
 
-            Logger.Log(MessageLevel.Info, LocalizedResourceManager.GetString("PackagingFilesFromOutputPath"), Path.GetDirectoryName(TargetPath));
+            Logger.Log(MessageLevel.Verbose, LocalizedResourceManager.GetString("PackagingFilesFromOutputPath"), Path.GetDirectoryName(TargetPath));
 
             var builder = new PackageBuilder();
 

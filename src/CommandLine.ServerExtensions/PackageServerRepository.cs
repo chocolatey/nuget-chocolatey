@@ -56,14 +56,14 @@ namespace NuGet.ServerExtensions
 
         public void AddPackage(IPackage package)
         {
-            _logger.Log(MessageLevel.Info, NuGetResources.MirrorCommandPushingPackage, package.GetFullName(), CommandLineUtility.GetSourceDisplayName(_destination.Source));
+            _logger.Log(MessageLevel.Verbose, NuGetResources.MirrorCommandPushingPackage, package.GetFullName(), CommandLineUtility.GetSourceDisplayName(_destination.Source));
             _destination.PushPackage(
                 _apiKey, 
                 package, 
                 package.GetStream().Length, 
                 (int)_timeout.TotalMilliseconds, 
                 disableBuffering: false);
-            _logger.Log(MessageLevel.Info, NuGetResources.MirrorCommandPackagePushed);
+            _logger.Log(MessageLevel.Verbose, NuGetResources.MirrorCommandPackagePushed);
         }
 
         public void RemovePackage(IPackage package)

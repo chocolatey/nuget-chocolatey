@@ -172,7 +172,7 @@ namespace NuGet
             else if (LocalRepository.Exists(package))
             {
                 // If the package wasn't installed by our set of operations, notify the user.
-                Logger.Log(MessageLevel.Info, NuGetResources.Log_PackageAlreadyInstalled, package.GetFullName());
+                Logger.Log(MessageLevel.Verbose, NuGetResources.Log_PackageAlreadyInstalled, package.GetFullName());
             }
         }
 
@@ -185,7 +185,7 @@ namespace NuGet
                 // If the package is already installed, then skip it
                 if (packageExists)
                 {
-                    Logger.Log(MessageLevel.Info, NuGetResources.Log_PackageAlreadyInstalled, operation.Package.GetFullName());
+                    Logger.Log(MessageLevel.Verbose, NuGetResources.Log_PackageAlreadyInstalled, operation.Package.GetFullName());
                 }
                 else
                 {
@@ -218,7 +218,7 @@ namespace NuGet
         protected void ExecuteInstall(IPackage package)
         {
             string packageFullName = package.GetFullName();
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_BeginInstallPackage, packageFullName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_BeginInstallPackage, packageFullName);
 
             PackageOperationEventArgs args = CreateOperation(package);
             OnInstalling(args);
@@ -232,7 +232,7 @@ namespace NuGet
 
             LocalRepository.AddPackage(package);
 
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_PackageInstalledSuccessfully, packageFullName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_PackageInstalledSuccessfully, packageFullName);
 
             OnInstalled(args);
         }
@@ -338,7 +338,7 @@ namespace NuGet
         protected virtual void ExecuteUninstall(IPackage package)
         {
             string packageFullName = package.GetFullName();
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_BeginUninstallPackage, packageFullName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_BeginUninstallPackage, packageFullName);
 
             PackageOperationEventArgs args = CreateOperation(package);
             OnUninstalling(args);
@@ -352,7 +352,7 @@ namespace NuGet
 
             LocalRepository.RemovePackage(package);
 
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_SuccessfullyUninstalledPackage, packageFullName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_SuccessfullyUninstalledPackage, packageFullName);
 
             OnUninstalled(args);
         }
@@ -467,7 +467,7 @@ namespace NuGet
             }
             else
             {
-                Logger.Log(MessageLevel.Info, NuGetResources.Log_NoUpdatesAvailable, packageId);
+                Logger.Log(MessageLevel.Verbose, NuGetResources.Log_NoUpdatesAvailable, packageId);
             }
         }
 

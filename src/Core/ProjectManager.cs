@@ -175,7 +175,7 @@ namespace NuGet
             }
             else if (LocalRepository.Exists(package))
             {
-                Logger.Log(MessageLevel.Info, NuGetResources.Log_ProjectAlreadyReferencesPackage, Project.ProjectName, package.GetFullName());
+                Logger.Log(MessageLevel.Verbose, NuGetResources.Log_ProjectAlreadyReferencesPackage, Project.ProjectName, package.GetFullName());
             }
         }
 
@@ -188,7 +188,7 @@ namespace NuGet
                 // If the package is already installed, then skip it
                 if (packageExists)
                 {
-                    Logger.Log(MessageLevel.Info, NuGetResources.Log_ProjectAlreadyReferencesPackage, Project.ProjectName, operation.Package.GetFullName());
+                    Logger.Log(MessageLevel.Verbose, NuGetResources.Log_ProjectAlreadyReferencesPackage, Project.ProjectName, operation.Package.GetFullName());
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace NuGet
         protected void AddPackageReferenceToProject(IPackage package)
         {
             string packageFullName = package.GetFullName();
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_BeginAddPackageReference, packageFullName, Project.ProjectName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_BeginAddPackageReference, packageFullName, Project.ProjectName);
 
             PackageOperationEventArgs args = CreateOperation(package);
             OnPackageReferenceAdding(args);
@@ -247,7 +247,7 @@ namespace NuGet
             
             ExtractPackageFilesToProject(package);
 
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_SuccessfullyAddedPackageReference, packageFullName, Project.ProjectName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_SuccessfullyAddedPackageReference, packageFullName, Project.ProjectName);
             OnPackageReferenceAdded(args);
         }
 
@@ -437,7 +437,7 @@ namespace NuGet
         private void RemovePackageReferenceFromProject(IPackage package)
         {
             string packageFullName = package.GetFullName();
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_BeginRemovePackageReference, packageFullName, Project.ProjectName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_BeginRemovePackageReference, packageFullName, Project.ProjectName);
 
             PackageOperationEventArgs args = CreateOperation(package);
             OnPackageReferenceRemoving(args);
@@ -495,7 +495,7 @@ namespace NuGet
             LocalRepository.RemovePackage(package);
 
 
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_SuccessfullyRemovedPackageReference, packageFullName, Project.ProjectName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_SuccessfullyRemovedPackageReference, packageFullName, Project.ProjectName);
             OnPackageReferenceRemoved(args);
         }
 
@@ -589,7 +589,7 @@ namespace NuGet
                 oldPackage.Version != package.Version &&
                 (allowPrereleaseVersions || targetVersionSetExplicitly || oldPackage.IsReleaseVersion() || !package.IsReleaseVersion() || oldPackage.Version < package.Version))
             {
-                Logger.Log(MessageLevel.Info, NuGetResources.Log_UpdatingPackages, package.Id, oldPackage.Version, package.Version, Project.ProjectName);
+                Logger.Log(MessageLevel.Verbose, NuGetResources.Log_UpdatingPackages, package.Id, oldPackage.Version, package.Version, Project.ProjectName);
                 UpdatePackageReferenceCore(package, updateDependencies, allowPrereleaseVersions);
             }
             else
@@ -597,16 +597,16 @@ namespace NuGet
                 IVersionSpec constraint = ConstraintProvider.GetConstraint(packageId);
                 if (constraint != null)
                 {
-                    Logger.Log(MessageLevel.Info, NuGetResources.Log_ApplyingConstraints, packageId, VersionUtility.PrettyPrint(constraint), ConstraintProvider.Source);
+                    Logger.Log(MessageLevel.Verbose, NuGetResources.Log_ApplyingConstraints, packageId, VersionUtility.PrettyPrint(constraint), ConstraintProvider.Source);
                 }
 
-                Logger.Log(MessageLevel.Info, NuGetResources.Log_NoUpdatesAvailableForProject, packageId, Project.ProjectName);
+                Logger.Log(MessageLevel.Verbose, NuGetResources.Log_NoUpdatesAvailableForProject, packageId, Project.ProjectName);
             }
         }
 
         public virtual void UpdatePackageReference(IPackage remotePackage, bool updateDependencies, bool allowPrereleaseVersions)
         {
-            Logger.Log(MessageLevel.Info, NuGetResources.Log_UpdatingPackagesWithoutOldVersion, remotePackage.Id, remotePackage.Version, Project.ProjectName);
+            Logger.Log(MessageLevel.Verbose, NuGetResources.Log_UpdatingPackagesWithoutOldVersion, remotePackage.Id, remotePackage.Version, Project.ProjectName);
             UpdatePackageReferenceCore(remotePackage, updateDependencies, allowPrereleaseVersions);
         }
 
