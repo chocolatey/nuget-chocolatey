@@ -2,9 +2,11 @@ namespace NuGet
 {
     public enum MessageLevel
     {
+        Verbose,
+        Debug,
         Info,
         Warning,
-        Debug,
-        Error
+        Error,
+        Fatal
     }
 }
