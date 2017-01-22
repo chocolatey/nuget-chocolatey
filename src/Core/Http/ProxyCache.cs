@@ -19,6 +19,7 @@ namespace NuGet
         /// </summary>
         private static readonly IWebProxy _originalSystemProxy = WebRequest.GetSystemWebProxy();
         private IWebProxy _overrideProxy;
+        private bool _isProxyOverridden = false;
 
         private readonly ConcurrentDictionary<Uri, WebProxy> _cache = new ConcurrentDictionary<Uri, WebProxy>();
 
@@ -56,11 +57,11 @@ namespace NuGet
 
         public IWebProxy GetProxy(Uri uri)
         {
-            if (_overrideProxy != null)
+            if (_isProxyOverridden)
             {
                 return _overrideProxy;
             }
-            
+
 #if !BOOTSTRAPPER
             // Check if the user has configured proxy details in settings or in the environment.
             WebProxy configuredProxy = GetUserConfiguredProxy();
@@ -140,15 +141,20 @@ namespace NuGet
             {
                 _cache.TryAdd(webProxy.Address, webProxy);
             }
-        }        
-        
+        }
+
         public void Override(IWebProxy proxy)
         {
-            var webProxy = proxy as WebProxy;
-            if (webProxy != null)
-            {
-                _overrideProxy = webProxy;
-            }
+            _overrideProxy = proxy;
+            _isProxyOverridden = true;
+
+        }
+
+        public void ClearOverriding()
+        {
+            _overrideProxy = null;
+            _isProxyOverridden = false;
+
         }
 
         private static WebProxy GetSystemProxy(Uri uri)
