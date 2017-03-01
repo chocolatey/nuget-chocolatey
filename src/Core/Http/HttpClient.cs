@@ -14,6 +14,11 @@ namespace NuGet
         private Uri _uri;
 
         public HttpClient(Uri uri)
+            : this(uri, false)
+        {
+        }
+
+        public HttpClient(Uri uri, bool bypassProxy)
         {
             if (uri == null)
             {
@@ -21,6 +26,7 @@ namespace NuGet
             }
 
             _uri = uri;
+            BypassProxy = bypassProxy;
         }
 
         public string UserAgent
@@ -70,6 +76,8 @@ namespace NuGet
             set;
         }
 
+        public bool BypassProxy { get; set; }
+
         // TODO: Get rid of this. Horrid to have static properties like this especially in a code path that does not look thread safe.
         public static ICredentialProvider DefaultCredentialProvider
         {
@@ -111,7 +119,8 @@ namespace NuGet
                 ProxyCache.Instance,
                 CredentialStore.Instance,
                 DefaultCredentialProvider,
-                DisableBuffering);
+                DisableBuffering, 
+                BypassProxy);
             return requestHelper.GetResponse();
         }
 
@@ -131,7 +140,7 @@ namespace NuGet
         {
             // Used the cached credentials and proxy we have
             request.Credentials = CredentialStore.Instance.GetCredentials(Uri);
-            request.Proxy = ProxyCache.Instance.GetProxy(Uri);
+            request.Proxy = ProxyCache.Instance.GetProxy(Uri, BypassProxy);
             STSAuthHelper.PrepareSTSRequest(request);
         }
 

@@ -6,6 +6,6 @@ namespace NuGet
     public interface IProxyCache
     {
         void Add(IWebProxy proxy);
-        IWebProxy GetProxy(Uri uri);
+        IWebProxy GetProxy(Uri uri, bool bypassProxy);
     }
 }
