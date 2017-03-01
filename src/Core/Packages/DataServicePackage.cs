@@ -317,7 +317,7 @@ namespace NuGet
             set;
         }
 
-        internal PackageDownloader Downloader { get; set; }
+        internal IPackageDownloader Downloader { get; set; }
 
         internal IHashProvider HashProvider
         {

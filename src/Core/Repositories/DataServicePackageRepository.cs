@@ -30,7 +30,7 @@ namespace NuGet
 
         private IDataServiceContext _context;
         private readonly IHttpClient _httpClient;
-        private readonly PackageDownloader _packageDownloader;
+        private readonly IPackageDownloader _packageDownloader;
         private CultureInfo _culture;
         private Tuple<string, string, string> _currentOperation;
         private event EventHandler<WebRequestEventArgs> _sendingRequest;
@@ -45,7 +45,7 @@ namespace NuGet
         {
         }
 
-        public DataServicePackageRepository(IHttpClient client, PackageDownloader packageDownloader)
+        public DataServicePackageRepository(IHttpClient client, IPackageDownloader packageDownloader)
         {
             if (client == null)
             {
@@ -148,7 +148,7 @@ namespace NuGet
         }
 
         // Do NOT delete this property. It is used by the functional test.
-        public PackageDownloader PackageDownloader
+        public IPackageDownloader PackageDownloader
         {
             get { return _packageDownloader; }
         }
