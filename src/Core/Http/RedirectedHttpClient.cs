@@ -18,12 +18,22 @@ namespace NuGet
         private readonly MemoryCache _memoryCache;
 
         public RedirectedHttpClient(Uri uri)
-            : this(uri, MemoryCache.Instance)
+            : this(uri, MemoryCache.Instance, false)
+        {
+        } 
+        
+        public RedirectedHttpClient(Uri uri, bool bypassProxy)
+            : this(uri, MemoryCache.Instance, bypassProxy)
         {
         }
 
-        public RedirectedHttpClient(Uri uri, MemoryCache memoryCache) 
-            : base(uri)
+        public RedirectedHttpClient(Uri uri, MemoryCache memoryCache)
+            : this(uri, memoryCache, false)
+        {
+        }
+
+        public RedirectedHttpClient(Uri uri, MemoryCache memoryCache, bool bypassProxy) 
+            : base(uri, bypassProxy)
         {
             _originalUri = uri;
             _memoryCache = memoryCache;

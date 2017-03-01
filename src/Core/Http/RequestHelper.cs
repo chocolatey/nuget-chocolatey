@@ -26,13 +26,15 @@ namespace NuGet
         int _proxyCredentialsRetryCount;
         bool _basicAuthIsUsedInPreviousRequest;
         bool _disableBuffering;
+        private readonly bool _bypassProxy;
 
         public RequestHelper(Func<WebRequest> createRequest,
             Action<WebRequest> prepareRequest,
             IProxyCache proxyCache,
             ICredentialCache credentialCache,
             ICredentialProvider credentialProvider,
-            bool disableBuffering)
+            bool disableBuffering,
+            bool bypassProxy)
         {
             _createRequest = createRequest;
             _prepareRequest = prepareRequest;
@@ -40,6 +42,7 @@ namespace NuGet
             _credentialCache = credentialCache;
             _credentialProvider = credentialProvider;
             _disableBuffering = disableBuffering;
+            _bypassProxy = bypassProxy;
         }
 
         public WebResponse GetResponse()
@@ -165,7 +168,7 @@ namespace NuGet
 
         private void ConfigureRequest(HttpWebRequest request)
         {
-            request.Proxy = _proxyCache.GetProxy(request.RequestUri);
+            request.Proxy = _proxyCache.GetProxy(request.RequestUri, _bypassProxy);
             if (request.Proxy != null && request.Proxy.Credentials == null)
             {
                 request.Proxy.Credentials = CredentialCache.DefaultCredentials;
