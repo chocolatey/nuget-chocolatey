@@ -25,7 +25,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Foo", "1.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -46,7 +46,7 @@ namespace NuGet.Test.ServerExtensions
             Assert.Equal(RepositoryOperationNames.Mirror, mockRepo.LastOperation);
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -84,7 +84,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Foo", "1.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -104,7 +104,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Foo", "1.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -131,7 +131,7 @@ namespace NuGet.Test.ServerExtensions
             AssertOutputEquals(mirrorCommand, new[]
                 {
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Warning, "Boom"),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -190,7 +190,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Baz", "0.7");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -217,7 +217,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Gamma", "1.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Gamma 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Gamma 1.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
             localCache.Verify();
@@ -243,7 +243,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Baz", "0.7");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
             localCache.Verify(c => c.GetPackages(), Times.Never());
@@ -265,7 +265,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "Baz", "0.8.1-alpha");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.8.1-alpha' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.8.1-alpha' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -291,8 +291,8 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "Foo", "1.0", "Baz", "0.4");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.4' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.4' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 2 package(s).")
                 });
         }
@@ -318,8 +318,8 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "Foo", "1.0", "Baz", "0.7");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.7' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 2 package(s).")
                 });
         }
@@ -343,9 +343,9 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "ChildPackage", "3.0", "PackageWithDependencies", "2.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 2 package(s).")
                 });
         }
@@ -372,8 +372,8 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "Foo", "1.0", "Baz", "0.8.1-alpha");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'Baz 0.8.1-alpha' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Foo 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'Baz 0.8.1-alpha' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 2 package(s).")
                 });
         }
@@ -395,9 +395,9 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "ChildPackage", "3.0", "PackageWithDependencies", "2.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 2 package(s).")
                 });
         }
@@ -421,12 +421,12 @@ namespace NuGet.Test.ServerExtensions
             // Assert
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (≥ 1.0 && < 2.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'ChildPackage 1.4' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 1.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (≥ 1.0 && < 2.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'ChildPackage 1.4' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 1.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'ChildPackage 3.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 4 package(s).")
                 });
         }
@@ -449,8 +449,8 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "ChildPackage", "3.0", "PackageWithDependencies", "2.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -473,7 +473,7 @@ namespace NuGet.Test.ServerExtensions
             AssertSinglePackage(mirrorCommand, "PackageWithDependencies", "2.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
@@ -512,8 +512,8 @@ namespace NuGet.Test.ServerExtensions
             AssertTwoPackages(mirrorCommand, "ChildPackage", "3.0", "PackageWithDependencies", "2.0");
             AssertOutputEquals(mirrorCommand, new[]
                 {
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
-                    new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Attempting to resolve dependency 'ChildPackage (> 2.0 && < 5.0)'."),
+                    new KeyValuePair<MessageLevel, string>(MessageLevel.Verbose, "Successfully mirrored 'PackageWithDependencies 2.0' to 'destinationurlpull'."),
                     new KeyValuePair<MessageLevel, string>(MessageLevel.Info, "Mirrored 1 package(s).")
                 });
         }
