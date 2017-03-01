@@ -320,15 +320,20 @@ namespace NuGet.Common
         {
             switch (level)
             {
+                case MessageLevel.Verbose:
                 case MessageLevel.Info:
                     WriteLine(message, args);
-                    break;
+                    break; 
                 case MessageLevel.Warning:
                     WriteWarning(message, args);
                     break;
                 case MessageLevel.Debug:
                     WriteColor(Out, ConsoleColor.Gray, message, args);
                     break;
+                case MessageLevel.Error:
+                case MessageLevel.Fatal:
+                    WriteError(message, args);
+                    break; 
             }
         }
 
