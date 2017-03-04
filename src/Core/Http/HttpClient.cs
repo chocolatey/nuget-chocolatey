@@ -171,7 +171,7 @@ namespace NuGet
             if (cert != null) httpRequest.ClientCertificates.Add(cert);
         }
 
-        public void DownloadData(Stream targetStream)
+        public virtual void DownloadData(Stream targetStream)
         {
             const int ChunkSize = 1024 * 4; // 4KB
 
@@ -216,12 +216,12 @@ namespace NuGet
             }
         }
 
-        private void OnProgressAvailable(int percentage)
+        protected void OnProgressAvailable(int percentage)
         {
             ProgressAvailable(this, new ProgressEventArgs(percentage));
         }
 
-        private void RaiseSendingRequest(WebRequest webRequest)
+        protected void RaiseSendingRequest(WebRequest webRequest)
         {
             SendingRequest(this, new WebRequestEventArgs(webRequest));
         }

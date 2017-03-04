@@ -58,7 +58,6 @@ namespace NuGet
 
         public IWebProxy GetProxy(Uri uri, bool bypassProxy)
         {
-
             if (bypassProxy) return null;
 
             if (_isProxyOverridden)
