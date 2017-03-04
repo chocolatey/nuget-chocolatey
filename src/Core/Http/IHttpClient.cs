@@ -7,27 +7,15 @@ namespace NuGet
 {
     public interface IHttpClient : IHttpClientEvents
     {
-        string UserAgent
-        {
-            get;
-            set;
-        }
+        string UserAgent { get; set; }
 
-        Uri Uri
-        {
-            get;
-        }
+        Uri Uri { get; }
 
-        Uri OriginalUri
-        {
-            get;
-        }
+        Uri OriginalUri { get; }
 
-        bool AcceptCompression
-        {
-            get;
-            set;
-        }
+        bool AcceptCompression { get; set;}
+
+        bool BypassProxy { get; set; }
 
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "This is expensive")]
         WebResponse GetResponse();
