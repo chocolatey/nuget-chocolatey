@@ -9,20 +9,42 @@ using NuGet.Resources;
 namespace NuGet
 {
     /// <summary>
-    /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to 
+    /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to
     /// allow older 4-digit versioning schemes to continue working.
     /// </summary>
     [Serializable]
     [TypeConverter(typeof(SemanticVersionTypeConverter))]
     public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>
     {
-        private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
-
+        private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace;
+        // private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
         // Versions containing up to 4 digits
-        private static readonly Regex _semanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?(?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$", _flags);
+        private static readonly Regex _semanticVersionRegex = new Regex(@"^
+(?<Version>\d+(\s*\.\s*\d+){0,3})
+(?<PackageVersion>_\d+)?
+(?<Prerelease>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
+(?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?
+$", _flags);
+
+//        private static readonly Regex _semanticVersionRegex = new Regex(@"^
+//(?<Version>\d+(\s*\.\s*\d+){0,3})
+//(?<PackageVersion>_\d+)?
+//(?<Prerelease>-[a-z][0-9a-z-]*)?
+//$", _flags);
 
         // Strict SemVer 2.0.0 format, this may contain only 3 digits.
-        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^(?<Version>([0-9]|[1-9][0-9]*)(\.([0-9]|[1-9][0-9]*)){2})(?<Release>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?(?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$", _flags);
+        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
+(?<Version>([0-9]|[1-9][0-9]*)(\.([0-9]|[1-9][0-9]*)){2})
+(?<PackageVersion>_\d+)?
+(?<Release>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
+(?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?
+$", _flags);
+
+//        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
+//(?<Version>\d+(\.\d+){2})
+//(?<PackageVersion>_\d+)?
+//(?<Prerelease>-[a-z][0-9a-z-]*)?
+//$", _flags);
 
         private readonly string _originalString;
         private string _normalizedVersionString;
@@ -34,7 +56,7 @@ namespace NuGet
         public SemanticVersion(string version)
             : this(Parse(version))
         {
-            // The constructor normalizes the version string so that it we do not need to normalize it every time we need to operate on it. 
+            // The constructor normalizes the version string so that it we do not need to normalize it every time we need to operate on it.
             // The original string represents the original form in which the version is represented to be used when printing.
             _originalString = version;
         }
@@ -57,9 +79,11 @@ namespace NuGet
         /// <param name="major">Major version X.y.z</param>
         /// <param name="minor">Minor version x.Y.z</param>
         /// <param name="build">Patch version x.y.Z</param>
-        /// <param name="specialVersion">Release label</param>
-        public SemanticVersion(int major, int minor, int build, string specialVersion)
-            : this(new Version(major, minor, build), specialVersion)
+        /// <param name="specialVersion">Special versioning</param>
+        /// <param name="packageReleaseVersion">Release version</param>
+
+        public SemanticVersion(int major, int minor, int build, string specialVersion, int packageReleaseVersion)
+            : this(new Version(major, minor, build), specialVersion, packageReleaseVersion)
         {
         }
 
@@ -80,7 +104,7 @@ namespace NuGet
         /// SemanticVersion
         /// </summary>
         public SemanticVersion(Version version)
-            : this(version, String.Empty)
+            : this(version, String.Empty, 0)
         {
         }
 
@@ -89,7 +113,7 @@ namespace NuGet
         /// </summary>
         /// <param name="specialVersion">Release label</param>
         public SemanticVersion(Version version, string specialVersion)
-            : this(version, specialVersion, metadata: null, originalString: null)
+            : this(version, specialVersion, metadata: null, packageReleaseVersion: 0, originalString: null)
         {
         }
 
@@ -99,11 +123,17 @@ namespace NuGet
         /// <param name="specialVersion">Release label</param>
         /// <param name="metadata">Build metadata</param>
         public SemanticVersion(Version version, string specialVersion, string metadata)
-         : this(version, specialVersion, metadata, originalString: null)
+         : this(version, specialVersion, metadata, 0, originalString: null)
         {
         }
 
-        private SemanticVersion(Version version, string specialVersion, string metadata, string originalString)
+        public SemanticVersion(Version version, string specialVersion, int packageReleaseVersion)
+            : this(version, specialVersion, null, packageReleaseVersion, null)
+        {
+        }
+
+
+        private SemanticVersion(Version version, string specialVersion, string metadata, int packageReleaseVersion, string originalString)
         {
             if (version == null)
             {
@@ -112,9 +142,11 @@ namespace NuGet
 
             Version = NormalizeVersionValue(version);
             SpecialVersion = specialVersion ?? String.Empty;
+            PackageReleaseVersion = packageReleaseVersion;
             Metadata = metadata;
 
-            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString() 
+            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString()
+                + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) 
                 + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null)
                 + (!String.IsNullOrEmpty(metadata) ? '+' + metadata : null)
                 : originalString;
@@ -126,25 +158,20 @@ namespace NuGet
             Version = semVer.Version;
             SpecialVersion = semVer.SpecialVersion;
             Metadata = semVer.Metadata;
+            PackageReleaseVersion = semVer.PackageReleaseVersion;
         }
 
         /// <summary>
         /// Gets the normalized version portion.
         /// </summary>
-        public Version Version
-        {
-            get;
-            private set;
-        }
+        public Version Version { get; private set; }
 
         /// <summary>
         /// Gets the optional release label. For SemVer 2.0.0 this may contain multiple '.' separated parts.
         /// </summary>
-        public string SpecialVersion
-        {
-            get;
-            private set;
-        }
+        public string SpecialVersion { get; private set; }
+
+        public int PackageReleaseVersion { get; private set; }
 
         /// <summary>
         /// SemVer 2.0.0 build metadata. This is not used for comparing or sorting.
@@ -159,19 +186,25 @@ namespace NuGet
         {
             if (!String.IsNullOrEmpty(_originalString))
             {
-                string original;
+                string original = _originalString;
 
-                // search the start of the SpecialVersion part or metadata, if any
-                int labelIndex = _originalString.IndexOfAny(new char[] { '-', '+' });
+                // search the start of the ReleaseVersion part, if any
+                int packageFixIndex = original.IndexOf('_');
+                if (packageFixIndex != -1)
+                {
+                    // remove the PackageReleaseVersion part
+                    original = original.Substring(0, packageFixIndex);
+                }
+
+                    // search the start of the SpecialVersion part or metadata, if any
+                int labelIndex = original.IndexOfAny(new char[] { '-', '+' });
                 if (labelIndex != -1)
                 {
                     // remove the SpecialVersion or metadata part
-                    original = _originalString.Substring(0, labelIndex);
+                    original = original.Substring(0, labelIndex);
                 }
-                else
-                {
-                    original = _originalString;
-                }
+
+
 
                 return SplitAndPadVersionString(original);
             }
@@ -190,7 +223,7 @@ namespace NuGet
             }
             else
             {
-                // if 'a' has less than 4 elements, we pad the '0' at the end 
+                // if 'a' has less than 4 elements, we pad the '0' at the end
                 // to make it 4.
                 var b = new string[4] { "0", "0", "0", "0" };
                 Array.Copy(a, 0, b, 0, a.Length);
@@ -247,16 +280,23 @@ namespace NuGet
                 return false;
             }
 
+            //semVer = new SemanticVersion(
+            //    NormalizeVersionValue(versionValue),
+            //    RemoveLeadingChar(match.Groups["Release"].Value),
+            //    RemoveLeadingChar(match.Groups["Metadata"].Value),
+            //    version.Replace(" ", ""));
+  
             semVer = new SemanticVersion(
-                NormalizeVersionValue(versionValue),
-                RemoveLeadingChar(match.Groups["Release"].Value),
-                RemoveLeadingChar(match.Groups["Metadata"].Value),
+                NormalizeVersionValue(versionValue), 
+                RemoveLeadingChar(match.Groups["Prerelease"].Value),
+                RemoveLeadingChar(match.Groups["Metadata"].Value), 
+                TryParseNumeric(RemoveLeadingChar(match.Groups["PackageVersion"].Value)), 
                 version.Replace(" ", ""));
-
+          
             return true;
         }
 
-        // Remove the - or + from a version section.
+        // Remove the -, _, or + from a version section.
         private static string RemoveLeadingChar(string s)
         {
             if (s != null && s.Length > 0)
@@ -265,6 +305,16 @@ namespace NuGet
             }
 
             return s;
+        }
+
+        private static int TryParseNumeric(string possibleNumeric)
+        {
+            if (string.IsNullOrWhiteSpace(possibleNumeric)) return 0;
+
+            var numericalValue = 0;
+            int.TryParse(possibleNumeric, out numericalValue);
+
+            return numericalValue;
         }
 
         /// <summary>
@@ -307,11 +357,16 @@ namespace NuGet
                 return 1;
             }
 
-            int result = Version.CompareTo(other.Version);
-
-            if (result != 0)
+            int versionResult = Version.CompareTo(other.Version);
+            if (versionResult != 0)
             {
-                return result;
+                return versionResult;
+            }
+
+            int packageReleaseVersionResult = PackageReleaseVersion.CompareTo(other.PackageReleaseVersion);
+            if (packageReleaseVersionResult != 0)
+            {
+                return packageReleaseVersionResult;
             }
 
             bool empty = String.IsNullOrEmpty(SpecialVersion);
@@ -430,11 +485,24 @@ namespace NuGet
                            .Append(Version.Revision);
                 }
 
+                if (PackageReleaseVersion != 0)
+                {
+                    builder.Append('_')
+                           .Append(PackageReleaseVersion);
+                }
+
                 if (!string.IsNullOrEmpty(SpecialVersion))
                 {
                     builder.Append('-')
                            .Append(SpecialVersion);
-                }
+                } 
+                
+                // Rob added this
+                //if (!string.IsNullOrEmpty(Metadata))
+                //{
+                //    builder.Append('+')
+                //           .Append(Metadata);
+                //}
 
                 _normalizedVersionString = builder.ToString();
             }
@@ -470,7 +538,7 @@ namespace NuGet
         /// </summary>
         public bool IsSemVer2()
         {
-            return !string.IsNullOrEmpty(Metadata) 
+            return !string.IsNullOrEmpty(Metadata)
                 || (!string.IsNullOrEmpty(SpecialVersion) && SpecialVersion.Contains("."));
         }
 
@@ -478,7 +546,9 @@ namespace NuGet
         {
             return !Object.ReferenceEquals(null, other) &&
                    Version.Equals(other.Version) &&
-                   SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase);
+                   PackageReleaseVersion.Equals(other.PackageReleaseVersion) &&
+                   SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase) &&
+                   Metadata.Equals(other.Metadata, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -490,9 +560,17 @@ namespace NuGet
         public override int GetHashCode()
         {
             int hashCode = Version.GetHashCode();
+            if (PackageReleaseVersion != 0)
+            {
+                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
+            }
             if (SpecialVersion != null)
             {
                 hashCode = hashCode * 4567 + SpecialVersion.GetHashCode();
+            }
+            if (Metadata != null)
+            {
+                hashCode = hashCode * 7890 + Metadata.GetHashCode();
             }
 
             return hashCode;

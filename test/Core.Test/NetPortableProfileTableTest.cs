@@ -1,45 +1,47 @@
 ﻿using System.Linq;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using NuGet.Test.Mocks;
 using Xunit;
 
 namespace NuGet.Test
 {
+    using System.Threading.Tasks;
+
     public class NetPortableProfileTableTest
     {
-        [Fact]
-        public async Task NetPortableProfileTable_LoadTestForThreadSafety()
-        {
-            // Arrange
-            try
-            {
-                var tasks = Enumerable
-                    .Range(1, 20)
-                    .Select(task => Task.Run(async () =>
-                    {
-                        await Task.Yield();
+        //[Fact]
+        //public async Task NetPortableProfileTable_LoadTestForThreadSafety()
+        //{
+        //    // Arrange
+        //    try
+        //    {
+        //        var tasks = Enumerable
+        //            .Range(1, 20)
+        //            .Select(task => Task.Run(async () =>
+        //            {
+        //                await Task.Yield();
 
-                        for (int iteration = 0; iteration < 50; iteration++)
-                        {
-                            NetPortableProfileTable.SetProfileCollection(null);
+        //                for (int iteration = 0; iteration < 50; iteration++)
+        //                {
+        //                    NetPortableProfileTable.SetProfileCollection(null);
 
-                            // Act
-                            var result = NetPortableProfileTable.Instance.GetProfile("not-real");
+        //                    // Act
+        //                    var result = NetPortableProfileTable.Instance.GetProfile("not-real");
 
-                            // Assert
-                            Assert.Null(result);
-                        }
-                    }));
+        //                    // Assert
+        //                    Assert.Null(result);
+        //                }
+        //            }));
 
-                await Task.WhenAll(tasks);
-            }
-            finally
-            {
-                // Reset the static state.
-                NetPortableProfileTable.SetProfileCollection(null);
-            }
-        }
+        //        await Task.WhenAll(tasks);
+        //    }
+        //    finally
+        //    {
+        //        // Reset the static state.
+        //        NetPortableProfileTable.SetProfileCollection(null);
+        //    }
+        //}
 
         [Fact]
         public void LoadSupportedFrameworkCorrectsTheWP7Framework()

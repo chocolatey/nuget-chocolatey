@@ -945,16 +945,16 @@ namespace NuGet
             // Trim the version so things like 1.0.0.0 end up being 1.0
             Version version = TrimVersion(semVer.Version);
 
-            yield return new SemanticVersion(version, semVer.SpecialVersion);
+            yield return new SemanticVersion(version, semVer.SpecialVersion, semVer.PackageReleaseVersion);
 
             if (version.Build == -1 && version.Revision == -1)
             {
-                yield return new SemanticVersion(new Version(version.Major, version.Minor, 0), semVer.SpecialVersion);
-                yield return new SemanticVersion(new Version(version.Major, version.Minor, 0, 0), semVer.SpecialVersion);
+                yield return new SemanticVersion(new Version(version.Major, version.Minor, 0), semVer.SpecialVersion, semVer.PackageReleaseVersion);
+                yield return new SemanticVersion(new Version(version.Major, version.Minor, 0, 0), semVer.SpecialVersion, semVer.PackageReleaseVersion);
             }
             else if (version.Revision == -1)
             {
-                yield return new SemanticVersion(new Version(version.Major, version.Minor, version.Build, 0), semVer.SpecialVersion);
+                yield return new SemanticVersion(new Version(version.Major, version.Minor, version.Build, 0), semVer.SpecialVersion, semVer.PackageReleaseVersion);
             }
         }
 
