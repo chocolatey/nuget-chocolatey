@@ -78,6 +78,10 @@ namespace NuGet
                 HttpClient client = GetClient("", "PUT", "application/octet-stream");
                 client.DisableBuffering = disableBuffering;
 
+                // upload with progress
+                // http://stackoverflow.com/a/20806988/18475
+                // client.ProgressAvailable += (sender, args) => { args.};
+
                 client.SendingRequest += (sender, e) =>
                 {
                     SendingRequest(this, e);
