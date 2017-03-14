@@ -10,7 +10,7 @@ namespace NuGet.Test
     {
         [Theory]
         [PropertyData("ConstructorData")]
-        public void StringConstructorParsesValuesCorrectly(string version, Version versionValue, string specialValue)
+        public void StringConstructorParsesValuesCorrectly(string version, Version versionValue, string specialValue, int packageReleaseVersion)
         {
             // Act
             SemanticVersion semanticVersion = new SemanticVersion(version);
@@ -18,6 +18,7 @@ namespace NuGet.Test
             // Assert
             Assert.Equal(versionValue, semanticVersion.Version);
             Assert.Equal(specialValue, semanticVersion.SpecialVersion);
+            Assert.Equal(packageReleaseVersion, semanticVersion.PackageReleaseVersion);
             Assert.Equal(version, semanticVersion.ToString());
         }
 
@@ -25,9 +26,10 @@ namespace NuGet.Test
         {
             get
             {
-                yield return new object[] { "1.0.0", new Version("1.0.0.0"), "" };
-                yield return new object[] { "2.3-alpha", new Version("2.3.0.0"), "alpha" };
-                yield return new object[] { "3.4.0.3-RC-3", new Version("3.4.0.3"), "RC-3" };
+                yield return new object[] { "1.0.0", new Version("1.0.0.0"), "", 0 };
+                yield return new object[] { "1.0.0_1", new Version("1.0.0.0"), "", 1 };
+                yield return new object[] { "2.3-alpha", new Version("2.3.0.0"), "alpha", 0 };
+                yield return new object[] { "3.4.0.3-RC-3", new Version("3.4.0.3"), "RC-3", 0 };
             }
         }
 
@@ -50,6 +52,7 @@ namespace NuGet.Test
         [InlineData("1.34.2Alpha")]
         [InlineData("1.34.2Release Candidate")]
         [InlineData("1.4.7-")]
+        [InlineData("1.4.7_")]
         public void ParseThrowsIfStringIsNotAValidSemVer(string versionString)
         {
             ExceptionAssert.ThrowsArgumentException(() => SemanticVersion.Parse(versionString),
@@ -62,6 +65,7 @@ namespace NuGet.Test
             get
             {
                 yield return new object[] { "1.022", new SemanticVersion(new Version("1.22.0.0"), "") };
+                yield return new object[] { "1.022_1", new SemanticVersion(new Version("1.22.0.0"), "" , 1) };
                 yield return new object[] { "23.2.3", new SemanticVersion(new Version("23.2.3.0"), "") };
                 yield return new object[] { "1.3.42.10133", new SemanticVersion(new Version("1.3.42.10133"), "") };
             }
@@ -84,6 +88,7 @@ namespace NuGet.Test
             get
             {
                 yield return new object[] { "1.022-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta") };
+                yield return new object[] { "1.022_1-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
                 yield return new object[] { "23.2.3-Alpha", new SemanticVersion(new Version("23.2.3.0"), "Alpha") };
                 yield return new object[] { "1.3.42.10133-PreRelease", new SemanticVersion(new Version("1.3.42.10133"), "PreRelease") };
                 yield return new object[] { "1.3.42.200930-RC-2", new SemanticVersion(new Version("1.3.42.200930"), "RC-2") };
@@ -107,6 +112,7 @@ namespace NuGet.Test
             get
             {
                 yield return new object[] { "  1.022-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta") };
+                yield return new object[] { "  1.022_1-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
                 yield return new object[] { "23.2.3-Alpha  ", new SemanticVersion(new Version("23.2.3.0"), "Alpha") };
                 yield return new object[] { "    1.3.42.10133-PreRelease  ", new SemanticVersion(new Version("1.3.42.10133"), "PreRelease") };
             }
@@ -131,6 +137,8 @@ namespace NuGet.Test
         [InlineData("1.4.5.6", "1.4.5.60")]
         [InlineData("1.01", "1.10")]
         [InlineData("1.01-alpha", "1.10-beta")]
+        [InlineData("1.0", "1.0_1")]
+        [InlineData("1.0_1", "1.0_2")]
         [InlineData("1.01.0-RC-1", "1.10.0-rc-2")]
         [InlineData("1.01-RC-1", "1.01")]
         [InlineData("1.01", "1.2-preview")]
@@ -185,6 +193,7 @@ namespace NuGet.Test
         [InlineData("1.0", "1.0.0.0")]
         [InlineData("1.23.01", "1.23.1")]
         [InlineData("1.45.6", "1.45.6.0")]
+        [InlineData("1.0", "1.0_0")]
         [InlineData("1.45.6-Alpha", "1.45.6-Alpha")]
         [InlineData("1.6.2-BeTa", "1.6.02-beta")]
         [InlineData("22.3.07     ", "22.3.07")]
@@ -224,7 +233,9 @@ namespace NuGet.Test
         [InlineData("1.0")]
         [InlineData("1.0.0")]
         [InlineData("1.0.0.0")]
+        [InlineData("1.0_1")]
         [InlineData("1.0-alpha")]
+        [InlineData("1.0_1-alpha")]
         [InlineData("1.0.0-b")]
         [InlineData("3.0.1.2")]
         [InlineData("2.1.4.3-pre-1")]
@@ -241,19 +252,21 @@ namespace NuGet.Test
         {
             get
             {
-                yield return new object[] { new Version("1.0"), null, "1.0" };
-                yield return new object[] { new Version("1.0.3.120"), String.Empty, "1.0.3.120" };
-                yield return new object[] { new Version("1.0.3.120"), "alpha", "1.0.3.120-alpha" };
-                yield return new object[] { new Version("1.0.3.120"), "rc-2", "1.0.3.120-rc-2" };
+                yield return new object[] { new Version("1.0"), null, 0, "1.0" };
+                yield return new object[] { new Version("1.0"), null, 2, "1.0_2" };
+                yield return new object[] { new Version("1.0.3.120"), String.Empty, 0, "1.0.3.120" };
+                yield return new object[] { new Version("1.0.3.120"), "alpha", 0, "1.0.3.120-alpha" };
+                yield return new object[] { new Version("1.0.3.120"), "rc-2", 0, "1.0.3.120-rc-2" };
+                yield return new object[] { new Version("1.0.3.120"), "rc-2", 1, "1.0.3.120_1-rc-2" };
             }
         }
 
         [Theory]
         [PropertyDataAttribute("ToStringFromVersionData")]
-        public void ToStringConstructedFromVersionAndSpecialVersionConstructor(Version version, string specialVersion, string expected)
+        public void ToStringConstructedFromVersionAndSpecialVersionConstructor(Version version, string specialVersion, int packageReleaseVersion, string expected)
         {
             // Act
-            SemanticVersion semVer = new SemanticVersion(version, specialVersion);
+            SemanticVersion semVer = new SemanticVersion(version, specialVersion, packageReleaseVersion);
 
             // Assert
             Assert.Equal(expected, semVer.ToString());
@@ -297,6 +310,7 @@ namespace NuGet.Test
         [InlineData("01.02.4.5-gamma", new string[] { "01", "02", "4", "5" })]
         [InlineData("1.02.3", new string[] { "1", "02", "3", "0" })]
         [InlineData("1.02.3-beta", new string[] { "1", "02", "3", "0" })]
+        [InlineData("1.02.3_1", new string[] { "1", "02", "3", "0" })]
         [InlineData("00100.02", new string[] { "00100", "02", "0", "0" })]
         [InlineData("00100.02-alpha", new string[] { "00100", "02", "0", "0" })]
         public void TestGetOriginalVersionComponents(
@@ -339,6 +353,8 @@ namespace NuGet.Test
         [InlineData("1.2.03", "1.2.3")]
         [InlineData("1.2.0.4", "1.2.0.4")]
         [InlineData("1.2.3.4", "1.2.3.4")]
+        [InlineData("1.2_1", "1.2.0_1")]
+        [InlineData("1.2_1-special", "1.2.0_1-special")]
         [InlineData("1.2-special", "1.2.0-special")]
         [InlineData("1.2.3-special", "1.2.3-special")]
         [InlineData("1.2.3.5-special", "1.2.3.5-special")]

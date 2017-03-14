@@ -16,8 +16,8 @@ namespace NuGet
     public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>
     {
         private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
-        private static readonly Regex _semanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$", _flags);
-        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^(?<Version>\d+(\.\d+){2})(?<Release>-[a-z][0-9a-z-]*)?$", _flags);
+        private static readonly Regex _semanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<PackageVersion>_\d+)?(?<Prerelease>-[a-z][0-9a-z-]*)?$", _flags);
+        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^(?<Version>\d+(\.\d+){2})(?<PackageVersion>_\d+)?(?<Prerelease>-[a-z][0-9a-z-]*)?$", _flags);
         private readonly string _originalString;
         private string _normalizedVersionString;
 
@@ -34,22 +34,27 @@ namespace NuGet
         {
         }
 
-        public SemanticVersion(int major, int minor, int build, string specialVersion)
-            : this(new Version(major, minor, build), specialVersion)
+        public SemanticVersion(int major, int minor, int build, string specialVersion, int packageReleaseVersion)
+            : this(new Version(major, minor, build), specialVersion, packageReleaseVersion)
         {
         }
 
         public SemanticVersion(Version version)
-            : this(version, String.Empty)
+            : this(version, String.Empty, 0)
         {
         }
 
         public SemanticVersion(Version version, string specialVersion)
-            : this(version, specialVersion, null)
+            : this(version, specialVersion, 0)
+        {
+        } 
+        
+        public SemanticVersion(Version version, string specialVersion, int packageReleaseVersion)
+            : this(version, specialVersion, packageReleaseVersion, null)
         {
         }
 
-        private SemanticVersion(Version version, string specialVersion, string originalString)
+        private SemanticVersion(Version version, string specialVersion, int packageReleaseVersion, string originalString)
         {
             if (version == null)
             {
@@ -57,7 +62,8 @@ namespace NuGet
             }
             Version = NormalizeVersionValue(version);
             SpecialVersion = specialVersion ?? String.Empty;
-            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString() + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
+            PackageReleaseVersion = packageReleaseVersion;
+            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString() + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
         }
 
         internal SemanticVersion(SemanticVersion semVer)
@@ -65,43 +71,44 @@ namespace NuGet
             _originalString = semVer.ToString();
             Version = semVer.Version;
             SpecialVersion = semVer.SpecialVersion;
+            PackageReleaseVersion = semVer.PackageReleaseVersion;
         }
 
         /// <summary>
         /// Gets the normalized version portion.
         /// </summary>
-        public Version Version
-        {
-            get;
-            private set;
-        }
+        public Version Version { get; private set; }
 
         /// <summary>
         /// Gets the optional special version.
         /// </summary>
-        public string SpecialVersion
-        {
-            get;
-            private set;
-        }
+        public string SpecialVersion { get; private set; }
+
+        public int PackageReleaseVersion { get; private set; }
 
         public string[] GetOriginalVersionComponents()
         {
             if (!String.IsNullOrEmpty(_originalString))
             {
-                string original;
+                string original = _originalString;
 
+                // search the start of the ReleaseVersion part, if any
+                int packageFixIndex = original.IndexOf('_');
+                if (packageFixIndex != -1)
+                {
+                    // remove the PackageReleaseVersion part
+                    original = original.Substring(0, packageFixIndex);
+                }
+                
                 // search the start of the SpecialVersion part, if any
-                int dashIndex = _originalString.IndexOf('-');
+                int dashIndex = original.IndexOf('-');
                 if (dashIndex != -1)
                 {
                     // remove the SpecialVersion part
-                    original = _originalString.Substring(0, dashIndex);
+                    original = original.Substring(0, dashIndex);
                 }
-                else
-                {
-                    original = _originalString;
-                }
+
+
 
                 return SplitAndPadVersionString(original);
             }
@@ -177,8 +184,18 @@ namespace NuGet
                 return false;
             }
 
-            semVer = new SemanticVersion(NormalizeVersionValue(versionValue), match.Groups["Release"].Value.TrimStart('-'), version.Replace(" ", ""));
+            semVer = new SemanticVersion(NormalizeVersionValue(versionValue), match.Groups["Prerelease"].Value.TrimStart('-'), TryParseNumeric(match.Groups["PackageVersion"].Value.TrimStart('_')), version.Replace(" ", ""));
             return true;
+        }
+
+        private static int TryParseNumeric(string possibleNumeric)
+        {
+            if (string.IsNullOrWhiteSpace(possibleNumeric)) return 0;
+
+            var numericalValue = 0;
+            int.TryParse(possibleNumeric, out numericalValue);
+
+            return numericalValue;
         }
 
         /// <summary>
@@ -221,11 +238,16 @@ namespace NuGet
                 return 1;
             }
 
-            int result = Version.CompareTo(other.Version);
-
-            if (result != 0)
+            int versionResult = Version.CompareTo(other.Version);
+            if (versionResult != 0)
             {
-                return result;
+                return versionResult;
+            }
+
+            int packageReleaseVersionResult = PackageReleaseVersion.CompareTo(other.PackageReleaseVersion);
+            if (packageReleaseVersionResult != 0)
+            {
+                return packageReleaseVersionResult;
             }
 
             bool empty = String.IsNullOrEmpty(SpecialVersion);
@@ -317,6 +339,12 @@ namespace NuGet
                            .Append(Version.Revision);
                 }
 
+                if (PackageReleaseVersion != 0)
+                {
+                    builder.Append('_')
+                           .Append(PackageReleaseVersion);
+                }
+                
                 if (!string.IsNullOrEmpty(SpecialVersion))
                 {
                     builder.Append('-')
@@ -333,6 +361,7 @@ namespace NuGet
         {
             return !Object.ReferenceEquals(null, other) &&
                    Version.Equals(other.Version) &&
+                   PackageReleaseVersion.Equals(other.PackageReleaseVersion) &&
                    SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -345,6 +374,10 @@ namespace NuGet
         public override int GetHashCode()
         {
             int hashCode = Version.GetHashCode();
+            if (PackageReleaseVersion != 0)
+            {
+                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
+            }
             if (SpecialVersion != null)
             {
                 hashCode = hashCode * 4567 + SpecialVersion.GetHashCode();
