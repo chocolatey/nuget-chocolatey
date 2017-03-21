@@ -162,6 +162,9 @@ namespace NuGet
         public ISet<string> Provides { get; set; }
         public ISet<string> Conflicts { get; set; }
 
+        public string SoftwareDisplayName { get; set; }
+        public string SoftwareDisplayVersion { get; set; }
+
         public string Copyright
         {
             get;
@@ -491,7 +494,10 @@ namespace NuGet
             Replaces.AddRange(metadata.Replaces);
             Provides.AddRange(metadata.Provides);
             Conflicts.AddRange(metadata.Conflicts);
-            
+
+            SoftwareDisplayName = metadata.SoftwareDisplayName;
+            SoftwareDisplayVersion = metadata.SoftwareDisplayVersion;
+
             if (metadata.Tags != null)
             {
                 Tags.AddRange(ParseTags(metadata.Tags));

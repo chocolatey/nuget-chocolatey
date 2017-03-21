@@ -117,6 +117,9 @@ namespace NuGet
         public IEnumerable<string> Provides { get; set; }
         public IEnumerable<string> Conflicts { get; set; }
 
+        public string SoftwareDisplayName { get; set; }
+        public string SoftwareDisplayVersion { get; set; }
+
         public Version MinClientVersion
         {
             get;

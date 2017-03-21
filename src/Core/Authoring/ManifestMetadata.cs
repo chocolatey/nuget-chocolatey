@@ -107,6 +107,12 @@ namespace NuGet
         [XmlElement("tags")]
         public string Tags { get; set; }
 
+        [XmlElement("softwareDisplayName")]
+        public string SoftwareDisplayName { get; set; }
+
+        [XmlElement("softwareDisplayVersion")]
+        public string SoftwareDisplayVersion { get; set; }
+
         [SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Xml deserialziation can't handle uris")]
         [XmlElement("projectSourceUrl")]
         public string ProjectSourceUrl { get; set; }
@@ -616,7 +622,6 @@ namespace NuGet
 
             return new PackageDependencySet(targetFramework, dependencies);
         }
-
 
     }
 }

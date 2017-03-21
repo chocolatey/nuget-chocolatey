@@ -245,6 +245,9 @@ namespace NuGet
         public bool IsDownloadCacheAvailable { get; set; }
         public DateTime? DownloadCacheDate { get; set; }
         public string DownloadCache { get; set; }
+        
+        public string SoftwareDisplayName { get; set; }
+        public string SoftwareDisplayVersion { get; set; }
 
         IEnumerable<DownloadCache> IServerPackageMetadata.DownloadCache
         {
