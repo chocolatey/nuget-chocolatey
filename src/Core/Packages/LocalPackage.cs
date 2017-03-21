@@ -443,5 +443,10 @@ namespace NuGet
             // extension method, must have 'this'.
             return this.GetFullName();
         }
+        
+        public void OverrideOriginalVersion(SemanticVersion version)
+        {
+            if (version != null) Version = version;
+        }
     }
 }
