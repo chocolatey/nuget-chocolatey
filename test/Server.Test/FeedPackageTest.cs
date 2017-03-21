@@ -19,7 +19,7 @@ namespace Server.Test
             var excludedProperties = new[] { "Owners", "ReportAbuseUrl", "GalleryDetailsUrl", "DownloadUrl", "Rating", "RatingsCount", "Language", 
                                              "AssemblyReferences", "FrameworkAssemblies", "DependencySets", "PackageAssemblyReferences", "LicenseNames",
                                              "LicenseNameCollection", "LicenseReportUrl", "ProjectSourceUrl", "PackageSourceUrl","DocsUrl","WikiUrl",
-                                             "MailingListUrl","BugTrackerUrl","Replaces", "Provides", "Conflicts"
+                                             "MailingListUrl","BugTrackerUrl","Replaces", "Provides", "Conflicts", "SoftwareDisplayName", "SoftwareDisplayVersion"
             };
             var feedPackageProperties = new HashSet<string>(typeof(NuGet.Server.DataServices.Package).GetProperties().Select(p => p.Name), StringComparer.Ordinal);
             var dataServiceProperties = typeof(DataServicePackage).GetProperties()

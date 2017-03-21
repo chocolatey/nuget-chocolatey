@@ -158,6 +158,8 @@ namespace NuGet
                     Replaces = GetCommaSeparatedString(metadata.Replaces),
                     Provides = GetCommaSeparatedString(metadata.Provides),
                     Conflicts = GetCommaSeparatedString(metadata.Conflicts),
+                    SoftwareDisplayName = metadata.SoftwareDisplayName.SafeTrim(),
+                    SoftwareDisplayVersion = metadata.SoftwareDisplayVersion.SafeTrim(),
                     IconUrl = ConvertUrlToStringSafe(metadata.IconUrl),
                     RequireLicenseAcceptance = metadata.RequireLicenseAcceptance,
                     DevelopmentDependency = metadata.DevelopmentDependency,

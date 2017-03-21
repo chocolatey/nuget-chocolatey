@@ -215,6 +215,8 @@ namespace NuGet.Test
             mockPackage.Setup(m => m.Replaces).Returns(new[] { String.Empty });
             mockPackage.Setup(m => m.Provides).Returns(new[] { String.Empty });
             mockPackage.Setup(m => m.Conflicts).Returns(new[] { String.Empty });
+            mockPackage.Setup(m => m.SoftwareDisplayName).Returns(String.Empty);
+            mockPackage.Setup(m => m.SoftwareDisplayVersion).Returns(String.Empty);
             mockPackage.Setup(m => m.MinClientVersion).Returns(minClientVersion == null ? new Version() : Version.Parse(minClientVersion));
             mockPackage.Setup(m => m.PackageAssemblyReferences).Returns(new PackageReferenceSet[0]);
             if (!listed)

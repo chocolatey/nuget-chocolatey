@@ -63,6 +63,8 @@
                             <xs:element name="replaces" maxOccurs="1" minOccurs="0" type="xs:string" />
                             <xs:element name="provides" maxOccurs="1" minOccurs="0" type="xs:string" />
                             <xs:element name="conflicts" maxOccurs="1" minOccurs="0" type="xs:string" />
+                            <xs:element name="softwareDisplayName" maxOccurs="1" minOccurs="0" type="xs:string" />
+                            <xs:element name="softwareDisplayVersion" maxOccurs="1" minOccurs="0" type="xs:string" />
                             <xs:element name="iconUrl" maxOccurs="1" minOccurs="0" type="xs:anyURI" />
                             <xs:element name="requireLicenseAcceptance" maxOccurs="1" minOccurs="0" type="xs:boolean" />
                             <xs:element name="developmentDependency" maxOccurs="1" minOccurs="0" type="xs:boolean" />

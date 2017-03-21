@@ -102,6 +102,9 @@ namespace NuGet.Server.DataServices
             IsDownloadCacheAvailable = package.IsDownloadCacheAvailable;
             DownloadCacheDate = package.DownloadCacheDate;
             DownloadCache = String.Join("|", package.DownloadCache.Select(ConvertDownloadCacheToStrings));
+
+            SoftwareDisplayName = package.SoftwareDisplayName;
+            SoftwareDisplayVersion = package.SoftwareDisplayVersion;
         }
 
         internal string FullPath
@@ -294,6 +297,9 @@ namespace NuGet.Server.DataServices
         public string Replaces { get; set; }
         public string Provides { get; set; }
         public string Conflicts { get; set; }
+        // round 2
+        public string SoftwareDisplayName { get; set; }
+        public string SoftwareDisplayVersion { get; set; }
         #endregion
 
         #region Server Metadata Only

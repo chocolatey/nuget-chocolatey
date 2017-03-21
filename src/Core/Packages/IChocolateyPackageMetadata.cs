@@ -14,5 +14,8 @@ namespace NuGet
         IEnumerable<string> Replaces { get; }
         IEnumerable<string> Provides { get; }
         IEnumerable<string> Conflicts { get; }
+
+        string SoftwareDisplayName { get; }
+        string SoftwareDisplayVersion { get; }
     }
 }

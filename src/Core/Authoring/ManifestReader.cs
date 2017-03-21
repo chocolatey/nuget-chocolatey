@@ -151,6 +151,12 @@ namespace NuGet
                     break;
                 case "conflicts":
                     manifestMetadata.Conflicts = value;
+                    break;             
+                case "softwareDisplayName":
+                    manifestMetadata.SoftwareDisplayName = value;
+                    break;        
+                case "softwareDisplayVersion":
+                    manifestMetadata.SoftwareDisplayVersion = value;
                     break;
                 case "dependencies":
                     manifestMetadata.DependencySets = ReadDependencySets(element);
