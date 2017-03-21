@@ -593,5 +593,10 @@ namespace NuGet
             }
             return package != null;
         }
+
+        public void OverrideOriginalVersion(SemanticVersion version)
+        {
+            if (version != null) Version = version.ToString();
+        }
     }
 }

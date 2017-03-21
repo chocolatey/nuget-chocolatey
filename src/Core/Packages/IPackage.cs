@@ -28,5 +28,7 @@ namespace NuGet
         Stream GetStream();
 
         void ExtractContents(IFileSystem fileSystem, string extractPath);
+
+        void OverrideOriginalVersion(SemanticVersion version);
     }
 }
