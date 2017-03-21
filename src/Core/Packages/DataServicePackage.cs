@@ -72,7 +72,6 @@ namespace NuGet
             set;
         }
 
-
         public Uri ReportAbuseUrl
         {
             get;
