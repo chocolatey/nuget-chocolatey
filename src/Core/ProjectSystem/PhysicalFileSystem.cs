@@ -164,6 +164,10 @@ namespace NuGet
             catch (DirectoryNotFoundException)
             {
             }
+            catch (IOException ex)
+            {
+                Logger.Log(MessageLevel.Debug, ex.Message);
+            }
         }
 
         public virtual IEnumerable<string> GetFiles(string path, bool recursive)
