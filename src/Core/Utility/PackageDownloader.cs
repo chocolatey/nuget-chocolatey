@@ -25,10 +25,9 @@ namespace NuGet
                 throw new ArgumentNullException("uri");
             }
 
-            var downloadClient = new HttpClient(uri)
-                                 {
-                                     UserAgent = HttpUtility.CreateUserAgentString(DefaultUserAgentClient)
-                                 };
+            var downloadClient = HttpClient.GetHttpClient(uri);
+            downloadClient.UserAgent = HttpUtility.CreateUserAgentString(DefaultUserAgentClient);
+
             DownloadPackage(downloadClient, package, targetStream);
         }
 
