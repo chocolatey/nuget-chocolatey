@@ -91,8 +91,8 @@ namespace NuGet
 
         protected internal virtual IHttpClient EnsureClient()
         {
-            var originalClient = new HttpClient(_originalUri);
-            return new HttpClient(GetResponseUri(originalClient));
+            var originalClient = new HttpClient(_originalUri, BypassProxy);
+            return new HttpClient(GetResponseUri(originalClient), BypassProxy);
         }
 
         private Uri GetResponseUri(HttpClient client)

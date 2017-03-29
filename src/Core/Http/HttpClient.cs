@@ -4,6 +4,9 @@ using System.Net;
 
 namespace NuGet
 {
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+
     public class HttpClient : IHttpClient
     {
         public event EventHandler<ProgressEventArgs> ProgressAvailable = delegate { };
@@ -27,6 +30,10 @@ namespace NuGet
 
             _uri = uri;
             BypassProxy = bypassProxy;
+
+            // we specifically don't want to update, as the oldest one will 
+            // likely have the most correct data on bypass
+            _proxyBypassCache.Value.GetOrAdd(_uri.Host + ":" + _uri.Port, bypassProxy);
         }
 
         public string UserAgent
@@ -106,21 +113,21 @@ namespace NuGet
 
         public virtual WebResponse GetResponse()
         {
-            Func<WebRequest> webRequestFactory = () =>
-            {
-                WebRequest request = WebRequest.Create(Uri);
-                InitializeRequestProperties(request);
-                return request;
-            };
-
             var requestHelper = new RequestHelper(
-                webRequestFactory,
+               () =>
+               {
+                    WebRequest request = WebRequest.Create(Uri);
+                    InitializeRequestProperties(request);
+
+                    return request;
+                },
                 RaiseSendingRequest,
                 ProxyCache.Instance,
                 CredentialStore.Instance,
                 DefaultCredentialProvider,
                 DisableBuffering, 
                 BypassProxy);
+
             return requestHelper.GetResponse();
         }
 
@@ -224,6 +231,25 @@ namespace NuGet
         protected void RaiseSendingRequest(WebRequest webRequest)
         {
             SendingRequest(this, new WebRequestEventArgs(webRequest));
+        }
+
+        private static readonly Lazy<ConcurrentDictionary<string, bool>> _proxyBypassCache = new Lazy<ConcurrentDictionary<string, bool>>(() => new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase));
+        public static HttpClient GetHttpClient(Uri uri)
+        {
+            if (uri == null)
+            {
+                throw new ArgumentNullException("uri");
+            }
+
+            var key = uri.Host + ":" + uri.Port;
+
+            var bypassProxy = false;
+            if (_proxyBypassCache.Value.ContainsKey(key))
+            {
+                bypassProxy = _proxyBypassCache.Value[key];
+            }
+
+            return new HttpClient(uri, bypassProxy);
         }
     }
 }

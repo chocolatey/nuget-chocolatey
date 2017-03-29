@@ -166,7 +166,7 @@ namespace NuGet
             }
 
             // Make a request to the metadata uri and get the schema
-            var client = new HttpClient(metadataUri);
+            var client = HttpClient.GetHttpClient(metadataUri);
 
             using (MemoryStream stream = new MemoryStream())
             {
