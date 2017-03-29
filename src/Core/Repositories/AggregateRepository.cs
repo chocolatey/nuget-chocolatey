@@ -164,7 +164,27 @@ namespace NuGet
 
         public IQueryable<IPackage> Search(string searchTerm, IEnumerable<string> targetFrameworks, bool allowPrereleaseVersions)
         {
-            return CreateAggregateQuery(Repositories.Select(r => r.Search(searchTerm, targetFrameworks, allowPrereleaseVersions)));
+            return CreateAggregateQuery(Repositories.Select(
+                r =>
+                {
+                    try
+                    {
+                        return r.Search(searchTerm, targetFrameworks, allowPrereleaseVersions);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (IgnoreFailingRepositories)
+                        {
+                            Logger.Log(MessageLevel.Warning, "Not able to contact source {0}. Error was {1}", r.Source, ex.Message);
+                            return Enumerable.Empty<IPackage>().AsQueryable();
+                        }
+                        else
+                        {
+                             Logger.Log(MessageLevel.Error, "Not able to contact source {0}. Error was {1}", r.Source, ex.Message);
+                            throw;
+                        }
+                    }
+                }));
         }
 
         public IPackageRepository Clone()
