@@ -16,8 +16,8 @@ namespace NuGet
     public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>
     {
         private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
-        private static readonly Regex _semanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<PackageVersion>_\d+)?(?<Prerelease>-[a-z][0-9a-z-]*)?$", _flags);
-        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^(?<Version>\d+(\.\d+){2})(?<PackageVersion>_\d+)?(?<Prerelease>-[a-z][0-9a-z-]*)?$", _flags);
+        private static readonly Regex _semanticVersionRegex = new Regex(@"^(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Prerelease>-[a-z][0-9a-z-]*)?(?<PackageVersion>_\d+)?$", _flags);
+        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^(?<Version>\d+(\.\d+){2})(?<Prerelease>-[a-z][0-9a-z-]*)?(?<PackageVersion>_\d+)?$", _flags);
         private readonly string _originalString;
         private string _normalizedVersionString;
 
@@ -63,7 +63,7 @@ namespace NuGet
             Version = NormalizeVersionValue(version);
             SpecialVersion = specialVersion ?? String.Empty;
             PackageReleaseVersion = packageReleaseVersion;
-            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString() + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
+            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString() + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) : originalString;
         }
 
         internal SemanticVersion(SemanticVersion semVer)
@@ -92,14 +92,6 @@ namespace NuGet
             {
                 string original = _originalString;
 
-                // search the start of the ReleaseVersion part, if any
-                int packageFixIndex = original.IndexOf('_');
-                if (packageFixIndex != -1)
-                {
-                    // remove the PackageReleaseVersion part
-                    original = original.Substring(0, packageFixIndex);
-                }
-                
                 // search the start of the SpecialVersion part, if any
                 int dashIndex = original.IndexOf('-');
                 if (dashIndex != -1)
@@ -108,7 +100,13 @@ namespace NuGet
                     original = original.Substring(0, dashIndex);
                 }
 
-
+                // search the start of the ReleaseVersion part, if any
+                int packageFixIndex = original.IndexOf('_');
+                if (packageFixIndex != -1)
+                {
+                    // remove the PackageReleaseVersion part
+                    original = original.Substring(0, packageFixIndex);
+                }
 
                 return SplitAndPadVersionString(original);
             }
@@ -338,17 +336,17 @@ namespace NuGet
                     builder.Append('.')
                            .Append(Version.Revision);
                 }
-
-                if (PackageReleaseVersion != 0)
-                {
-                    builder.Append('_')
-                           .Append(PackageReleaseVersion);
-                }
                 
                 if (!string.IsNullOrEmpty(SpecialVersion))
                 {
                     builder.Append('-')
                            .Append(SpecialVersion);
+                }
+                
+                if (PackageReleaseVersion != 0)
+                {
+                    builder.Append('_')
+                           .Append(PackageReleaseVersion);
                 }
 
                 _normalizedVersionString = builder.ToString();
@@ -374,13 +372,13 @@ namespace NuGet
         public override int GetHashCode()
         {
             int hashCode = Version.GetHashCode();
-            if (PackageReleaseVersion != 0)
-            {
-                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
-            }
             if (SpecialVersion != null)
             {
                 hashCode = hashCode * 4567 + SpecialVersion.GetHashCode();
+            }
+            if (PackageReleaseVersion != 0)
+            {
+                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
             }
 
             return hashCode;

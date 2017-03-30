@@ -53,6 +53,7 @@ namespace NuGet.Test
         [InlineData("1.34.2Release Candidate")]
         [InlineData("1.4.7-")]
         [InlineData("1.4.7_")]
+        [InlineData("1.4.7_2_")]
         public void ParseThrowsIfStringIsNotAValidSemVer(string versionString)
         {
             ExceptionAssert.ThrowsArgumentException(() => SemanticVersion.Parse(versionString),
@@ -88,7 +89,7 @@ namespace NuGet.Test
             get
             {
                 yield return new object[] { "1.022-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta") };
-                yield return new object[] { "1.022_1-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
+                yield return new object[] { "1.022-Beta_1", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
                 yield return new object[] { "23.2.3-Alpha", new SemanticVersion(new Version("23.2.3.0"), "Alpha") };
                 yield return new object[] { "1.3.42.10133-PreRelease", new SemanticVersion(new Version("1.3.42.10133"), "PreRelease") };
                 yield return new object[] { "1.3.42.200930-RC-2", new SemanticVersion(new Version("1.3.42.200930"), "RC-2") };
@@ -112,7 +113,7 @@ namespace NuGet.Test
             get
             {
                 yield return new object[] { "  1.022-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta") };
-                yield return new object[] { "  1.022_1-Beta", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
+                yield return new object[] { "  1.022-Beta_1", new SemanticVersion(new Version("1.22.0.0"), "Beta", 1) };
                 yield return new object[] { "23.2.3-Alpha  ", new SemanticVersion(new Version("23.2.3.0"), "Alpha") };
                 yield return new object[] { "    1.3.42.10133-PreRelease  ", new SemanticVersion(new Version("1.3.42.10133"), "PreRelease") };
             }
@@ -235,7 +236,7 @@ namespace NuGet.Test
         [InlineData("1.0.0.0")]
         [InlineData("1.0_1")]
         [InlineData("1.0-alpha")]
-        [InlineData("1.0_1-alpha")]
+        [InlineData("1.0-alpha_1")]
         [InlineData("1.0.0-b")]
         [InlineData("3.0.1.2")]
         [InlineData("2.1.4.3-pre-1")]
@@ -257,7 +258,7 @@ namespace NuGet.Test
                 yield return new object[] { new Version("1.0.3.120"), String.Empty, 0, "1.0.3.120" };
                 yield return new object[] { new Version("1.0.3.120"), "alpha", 0, "1.0.3.120-alpha" };
                 yield return new object[] { new Version("1.0.3.120"), "rc-2", 0, "1.0.3.120-rc-2" };
-                yield return new object[] { new Version("1.0.3.120"), "rc-2", 1, "1.0.3.120_1-rc-2" };
+                yield return new object[] { new Version("1.0.3.120"), "rc-2", 1, "1.0.3.120-rc-2_1" };
             }
         }
 
@@ -354,7 +355,7 @@ namespace NuGet.Test
         [InlineData("1.2.0.4", "1.2.0.4")]
         [InlineData("1.2.3.4", "1.2.3.4")]
         [InlineData("1.2_1", "1.2.0_1")]
-        [InlineData("1.2_1-special", "1.2.0_1-special")]
+        [InlineData("1.2-special_1", "1.2.0-special_1")]
         [InlineData("1.2-special", "1.2.0-special")]
         [InlineData("1.2.3-special", "1.2.3-special")]
         [InlineData("1.2.3.5-special", "1.2.3.5-special")]
@@ -368,7 +369,7 @@ namespace NuGet.Test
             var result = version.ToNormalizedString();
 
             // Assert
-            Assert.Equal(result, expected);
+            Assert.Equal(expected, result);
         }
 
     }
