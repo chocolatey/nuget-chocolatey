@@ -21,9 +21,9 @@ namespace NuGet
         // Versions containing up to 4 digits
         private static readonly Regex _semanticVersionRegex = new Regex(@"^
 (?<Version>\d+(\s*\.\s*\d+){0,3})
-(?<PackageVersion>_\d+)?
 (?<Prerelease>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
 (?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?
+(?<PackageVersion>_\d+)?
 $", _flags);
 
 //        private static readonly Regex _semanticVersionRegex = new Regex(@"^
@@ -35,9 +35,9 @@ $", _flags);
         // Strict SemVer 2.0.0 format, this may contain only 3 digits.
         private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
 (?<Version>([0-9]|[1-9][0-9]*)(\.([0-9]|[1-9][0-9]*)){2})
-(?<PackageVersion>_\d+)?
 (?<Release>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
 (?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?
+(?<PackageVersion>_\d+)?
 $", _flags);
 
 //        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
@@ -146,9 +146,9 @@ $", _flags);
             Metadata = metadata;
 
             _originalString = String.IsNullOrEmpty(originalString) ? version.ToString()
-                + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) 
                 + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null)
                 + (!String.IsNullOrEmpty(metadata) ? '+' + metadata : null)
+                + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) 
                 : originalString;
         }
 
@@ -188,15 +188,7 @@ $", _flags);
             {
                 string original = _originalString;
 
-                // search the start of the ReleaseVersion part, if any
-                int packageFixIndex = original.IndexOf('_');
-                if (packageFixIndex != -1)
-                {
-                    // remove the PackageReleaseVersion part
-                    original = original.Substring(0, packageFixIndex);
-                }
-
-                    // search the start of the SpecialVersion part or metadata, if any
+                // search the start of the SpecialVersion part or metadata, if any
                 int labelIndex = original.IndexOfAny(new char[] { '-', '+' });
                 if (labelIndex != -1)
                 {
@@ -204,7 +196,13 @@ $", _flags);
                     original = original.Substring(0, labelIndex);
                 }
 
-
+                // search the start of the ReleaseVersion part, if any
+                int packageFixIndex = original.IndexOf('_');
+                if (packageFixIndex != -1)
+                {
+                    // remove the PackageReleaseVersion part
+                    original = original.Substring(0, packageFixIndex);
+                }
 
                 return SplitAndPadVersionString(original);
             }
@@ -485,12 +483,6 @@ $", _flags);
                            .Append(Version.Revision);
                 }
 
-                if (PackageReleaseVersion != 0)
-                {
-                    builder.Append('_')
-                           .Append(PackageReleaseVersion);
-                }
-
                 if (!string.IsNullOrEmpty(SpecialVersion))
                 {
                     builder.Append('-')
@@ -503,6 +495,12 @@ $", _flags);
                 //    builder.Append('+')
                 //           .Append(Metadata);
                 //}
+
+                if (PackageReleaseVersion != 0)
+                {
+                    builder.Append('_')
+                           .Append(PackageReleaseVersion);
+                }
 
                 _normalizedVersionString = builder.ToString();
             }
@@ -560,17 +558,19 @@ $", _flags);
         public override int GetHashCode()
         {
             int hashCode = Version.GetHashCode();
-            if (PackageReleaseVersion != 0)
-            {
-                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
-            }
             if (SpecialVersion != null)
             {
                 hashCode = hashCode * 4567 + SpecialVersion.GetHashCode();
             }
+
             if (Metadata != null)
             {
                 hashCode = hashCode * 7890 + Metadata.GetHashCode();
+            }
+
+            if (PackageReleaseVersion != 0)
+            {
+                hashCode = hashCode * 123 + PackageReleaseVersion.GetHashCode();
             }
 
             return hashCode;
