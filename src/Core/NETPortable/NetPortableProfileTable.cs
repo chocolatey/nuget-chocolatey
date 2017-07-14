@@ -116,16 +116,19 @@ namespace NuGet
             if (_portableProfilesSetByOptionalFrameworks != null
                 && _portableProfilesSetByOptionalFrameworks.TryGetValue(projectOptionalFrameworkName.Identifier, out versionProfileISetTupleList))
             {
-                foreach (var versionProfileISetTuple in versionProfileISetTupleList)
+                if (versionProfileISetTupleList != null)
                 {
-                    if (projectOptionalFrameworkName.Version >= versionProfileISetTuple.Item1)
+                    foreach (var versionProfileISetTuple in versionProfileISetTupleList)
                     {
-                        foreach (var profileName in versionProfileISetTuple.Item2)
+                        if (projectOptionalFrameworkName.Version >= versionProfileISetTuple.Item1)
                         {
-                            NetPortableProfile profile = GetProfile(profileName);
-                            if (profile != null && packageFramework.IsCompatibleWith(profile))
+                            foreach (var profileName in versionProfileISetTuple.Item2)
                             {
-                                return true;
+                                NetPortableProfile profile = GetProfile(profileName);
+                                if (profile != null && packageFramework.IsCompatibleWith(profile))
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }

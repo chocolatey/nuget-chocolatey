@@ -175,7 +175,7 @@ namespace NuGet
             }
 
             var cert = DefaultCertificateProvider.GetCertificate(Uri);
-            if (cert != null) httpRequest.ClientCertificates.Add(cert);
+            if (cert != null && httpRequest != null) httpRequest.ClientCertificates.Add(cert);
         }
 
         public virtual void DownloadData(Stream targetStream)
