@@ -13,7 +13,7 @@
     <TargetFrameworkProfile Condition=" '$(MonoBuild)' == '' And '$(TargetFrameworkVersion)' == 'v4.0' ">Client</TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>IS_NET40_CLIENT;NUGET_FRAMEWORKS_INTERNAL</DefineConstants>
-    <LangVersion>5</LangVersion>
+    <LangVersion>Default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\Common\CommonResources.resx">
