@@ -8,6 +8,17 @@ namespace NuGet.Test
 {
     public class SemanticVersionTest
     {
+        public static IEnumerable<object[]> ConstructorData
+        {
+            get
+            {
+                yield return new object[] { "1.0.0", new Version("1.0.0.0"), "", 0 };
+                yield return new object[] { "1.0.0_1", new Version("1.0.0.0"), "", 1 };
+                yield return new object[] { "2.3-alpha", new Version("2.3.0.0"), "alpha", 0 };
+                yield return new object[] { "3.4.0.3-RC-3", new Version("3.4.0.3"), "RC-3", 0 };
+            }
+        }
+
         [Theory]
         [PropertyData("ConstructorData")]
         public void StringConstructorParsesValuesCorrectly(string version, Version versionValue, string specialValue, int packageReleaseVersion)
@@ -20,17 +31,6 @@ namespace NuGet.Test
             Assert.Equal(specialValue, semanticVersion.SpecialVersion);
             Assert.Equal(packageReleaseVersion, semanticVersion.PackageReleaseVersion);
             Assert.Equal(version, semanticVersion.ToString());
-        }
-
-        public static IEnumerable<object[]> ConstructorData
-        {
-            get
-            {
-                yield return new object[] { "1.0.0", new Version("1.0.0.0"), "", 0 };
-                yield return new object[] { "1.0.0_1", new Version("1.0.0.0"), "", 1 };
-                yield return new object[] { "2.3-alpha", new Version("2.3.0.0"), "alpha", 0 };
-                yield return new object[] { "3.4.0.3-RC-3", new Version("3.4.0.3"), "RC-3", 0 };
-            }
         }
 
         [Fact]
@@ -157,7 +157,13 @@ namespace NuGet.Test
         [InlineData("1.01.0-RC-1", "1.10.0-rc-2")]
         [InlineData("1.01-RC-1", "1.01")]
         [InlineData("1.01", "1.2-preview")]
+        [InlineData("1.01-9", "1.01-9_1")]
+        [InlineData("1.01-9_1", "1.01-9_2")]
         [InlineData("1.01-9", "1.01-10")]
+        [InlineData("1.01-9_1", "1.01-10_0")]
+        [InlineData("1.01-rc.1", "1.01-rc.1_1")]
+        [InlineData("1.01-rc.1_1", "1.01-rc.1_2")]
+        [InlineData("1.01-rc.1", "1.01-rc.2")]
         public void SemVerLessThanAndGreaterThanOperatorsWorks(string versionA, string versionB)
         {
             // Arrange
@@ -286,11 +292,12 @@ namespace NuGet.Test
         {
             get
             {
-                yield return new object[] { new Version("1.0"), null, "1.0" };
-                yield return new object[] { new Version("1.0.3.120"), String.Empty, "1.0.3.120" };
-                yield return new object[] { new Version("1.0.3.120"), "alpha", "1.0.3.120-alpha" };
-                yield return new object[] { new Version("1.0.3.120"), "rc-2", "1.0.3.120-rc-2" };
-                yield return new object[] { new Version("1.0.3.120"), "rc.2", "1.0.3.120-rc.2" };
+                yield return new object[] { new Version("1.0"), null, 0, "1.0" };
+                yield return new object[] { new Version("1.0.3.120"), String.Empty, 0, "1.0.3.120" };
+                yield return new object[] { new Version("1.0.3.120"), "alpha", 0, "1.0.3.120-alpha" };
+                yield return new object[] { new Version("1.0.3.120"), "rc-2", 0, "1.0.3.120-rc-2" };
+                yield return new object[] { new Version("1.0.3.120"), "rc.2", 0, "1.0.3.120-rc.2" };
+                yield return new object[] { new Version("1.0.3.120"), "rc.2", 1, "1.0.3.120-rc.2_1" };
                 yield return new object[] { new Version("1.0"), null, 0, "1.0" };
                 yield return new object[] { new Version("1.0"), null, 2, "1.0_2" };
                 yield return new object[] { new Version("1.0.3.120"), String.Empty, 0, "1.0.3.120" };
@@ -346,6 +353,7 @@ namespace NuGet.Test
 
         [Theory]
         [InlineData("1.2.4.5", new string[] { "1", "2", "4", "5" })]
+        [InlineData("1.2.4.5_1", new string[] { "1", "2", "4", "5" })]
         [InlineData("01.02.4.5-gamma", new string[] { "01", "02", "4", "5" })]
         [InlineData("1.02.3", new string[] { "1", "02", "3", "0" })]
         [InlineData("1.02.3-beta", new string[] { "1", "02", "3", "0" })]
@@ -417,13 +425,19 @@ namespace NuGet.Test
         [InlineData("1.0.0")]
         [InlineData("0.0.1")]
         [InlineData("1.2.3")]
+        [InlineData("1.2.3_1")]
         [InlineData("1.2.3-alpha")]
+        [InlineData("1.2.3-alpha_2")]
         [InlineData("1.2.3-X.yZ.3.234.243.32423423.4.23423.4324.234.234.3242")]
+        [InlineData("1.2.3-X.yZ.3.234.243.32423423.4.23423.4324.234.234.3242_10")]
         [InlineData("1.2.3-X.yZ.3.234.243.32423423.4.23423+METADATA")]
+        [InlineData("1.2.3-X.yZ.3.234.243.32423423.4.23423+METADATA_2")]
         [InlineData("1.2.3-X.y3+0")]
         [InlineData("1.2.3-X+0")]
         [InlineData("1.2.3+0")]
-        [InlineData("1.2.3-0")]
+        [InlineData("1.2.3-0")]  
+        [InlineData("1.2.3-X+0_2")]
+        //[InlineData("1.2.3+0_1")] (zero doesn't evaluate further over)
         public void ParseSemanticVersionStrict(string versionString)
         {
             // Act

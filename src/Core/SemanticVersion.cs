@@ -18,6 +18,7 @@ namespace NuGet
     {
         private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace;
         // private const RegexOptions _flags = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
+
         // Versions containing up to 4 digits
         private static readonly Regex _semanticVersionRegex = new Regex(@"^
 (?<Version>\d+(\s*\.\s*\d+){0,3})
@@ -28,22 +29,22 @@ $", _flags);
 
 //        private static readonly Regex _semanticVersionRegex = new Regex(@"^
 //(?<Version>\d+(\s*\.\s*\d+){0,3})
-//(?<PackageVersion>_\d+)?
 //(?<Prerelease>-[a-z][0-9a-z-]*)?
+//(?<PackageVersion>_\d+)?
 //$", _flags);
 
         // Strict SemVer 2.0.0 format, this may contain only 3 digits.
         private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
 (?<Version>([0-9]|[1-9][0-9]*)(\.([0-9]|[1-9][0-9]*)){2})
-(?<Release>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
+(?<Prerelease>-([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+(\.([0]\b|[0]$|[0][0-9]*[A-Za-z-]+|[1-9A-Za-z-][0-9A-Za-z-]*)+)*)?
 (?<Metadata>\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?
 (?<PackageVersion>_\d+)?
 $", _flags);
 
 //        private static readonly Regex _strictSemanticVersionRegex = new Regex(@"^
 //(?<Version>\d+(\.\d+){2})
-//(?<PackageVersion>_\d+)?
 //(?<Prerelease>-[a-z][0-9a-z-]*)?
+//(?<PackageVersion>_\d+)?
 //$", _flags);
 
         private readonly string _originalString;
@@ -79,9 +80,20 @@ $", _flags);
         /// <param name="major">Major version X.y.z</param>
         /// <param name="minor">Minor version x.Y.z</param>
         /// <param name="build">Patch version x.y.Z</param>
-        /// <param name="specialVersion">Special versioning</param>
-        /// <param name="packageReleaseVersion">Release version</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        public SemanticVersion(int major, int minor, int build, string specialVersion)
+            : this(new Version(major, minor, build), specialVersion, packageReleaseVersion:0)
+        {
+        }
 
+        /// <summary>
+        /// SemanticVersion
+        /// </summary>
+        /// <param name="major">Major version X.y.z</param>
+        /// <param name="minor">Minor version x.Y.z</param>
+        /// <param name="build">Patch version x.y.Z</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        /// <param name="packageReleaseVersion">Package release version</param>
         public SemanticVersion(int major, int minor, int build, string specialVersion, int packageReleaseVersion)
             : this(new Version(major, minor, build), specialVersion, packageReleaseVersion)
         {
@@ -93,46 +105,88 @@ $", _flags);
         /// <param name="major">Major version X.y.z</param>
         /// <param name="minor">Minor version x.Y.z</param>
         /// <param name="build">Patch version x.y.Z</param>
-        /// <param name="specialVersion">Release label</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
         /// <param name="metadata">Build metadata</param>
         public SemanticVersion(int major, int minor, int build, string specialVersion, string metadata)
             : this(new Version(major, minor, build), specialVersion, metadata)
         {
         }
+      
+        /// <summary>
+        /// SemanticVersion
+        /// </summary>
+        /// <param name="major">Major version X.y.z</param>
+        /// <param name="minor">Minor version x.Y.z</param>
+        /// <param name="build">Patch version x.y.Z</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        /// <param name="metadata">Build metadata</param>
+        /// <param name="packageReleaseVersion">Package release version</param>
+        public SemanticVersion(int major, int minor, int build, string specialVersion, string metadata, int packageReleaseVersion)
+            : this(new Version(major, minor, build), specialVersion, metadata, packageReleaseVersion, originalString: null)
+        {
+        }
 
         /// <summary>
         /// SemanticVersion
         /// </summary>
+        /// <param name="version">Built-in version.</param>
         public SemanticVersion(Version version)
-            : this(version, String.Empty, 0)
+            : this(version, specialVersion: string.Empty, metadata: string.Empty, packageReleaseVersion: 0)
         {
         }
 
         /// <summary>
         /// SemanticVersion
         /// </summary>
-        /// <param name="specialVersion">Release label</param>
+        /// <param name="version">Built-in version</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
         public SemanticVersion(Version version, string specialVersion)
-            : this(version, specialVersion, metadata: null, packageReleaseVersion: 0, originalString: null)
+            : this(version, specialVersion, metadata: string.Empty, packageReleaseVersion: 0, originalString: null)
         {
         }
 
         /// <summary>
         /// SemanticVersion
         /// </summary>
-        /// <param name="specialVersion">Release label</param>
+        /// <param name="version">Built-in version</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
         /// <param name="metadata">Build metadata</param>
         public SemanticVersion(Version version, string specialVersion, string metadata)
-         : this(version, specialVersion, metadata, 0, originalString: null)
+         : this(version, specialVersion, metadata, packageReleaseVersion: 0, originalString: null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SemanticVersion"/> class.
+        /// </summary>
+        /// <param name="version">Built-in version</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        /// <param name="packageReleaseVersion">The package release version</param>
         public SemanticVersion(Version version, string specialVersion, int packageReleaseVersion)
-            : this(version, specialVersion, null, packageReleaseVersion, null)
+            : this(version, specialVersion, metadata: string.Empty, packageReleaseVersion: packageReleaseVersion, originalString: null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SemanticVersion"/> class.
+        /// </summary>
+        /// <param name="version">The version.</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        /// <param name="metadata">Build metadata</param>
+        /// <param name="packageReleaseVersion">The package release version.</param>
+        public SemanticVersion(Version version, string specialVersion, string metadata, int packageReleaseVersion)
+            : this(version, specialVersion, metadata, packageReleaseVersion, originalString:null)
+        {
+        }
 
+        /// <summary>
+        /// SemanticVersion
+        /// </summary>
+        /// <param name="version">Built-in version</param>
+        /// <param name="specialVersion">Prerelease versioning</param>
+        /// <param name="metadata">Build metadata</param>
+        /// <param name="packageReleaseVersion">Package release version</param>
+        /// <param name="originalString">Original version string</param>
         private SemanticVersion(Version version, string specialVersion, string metadata, int packageReleaseVersion, string originalString)
         {
             if (version == null)
@@ -141,13 +195,13 @@ $", _flags);
             }
 
             Version = NormalizeVersionValue(version);
-            SpecialVersion = specialVersion ?? String.Empty;
+            SpecialVersion = specialVersion ?? string.Empty;
+            Metadata = metadata ?? string.Empty;
             PackageReleaseVersion = packageReleaseVersion;
-            Metadata = metadata;
 
-            _originalString = String.IsNullOrEmpty(originalString) ? version.ToString()
-                + (!String.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null)
-                + (!String.IsNullOrEmpty(metadata) ? '+' + metadata : null)
+            _originalString = string.IsNullOrWhiteSpace(originalString) ? version.ToString()
+                + (!string.IsNullOrWhiteSpace(specialVersion) ? '-' + specialVersion : null)
+                + (!string.IsNullOrWhiteSpace(metadata) ? '+' + metadata : null)
                 + (packageReleaseVersion != 0 ? '_' + packageReleaseVersion.ToString() : null) 
                 : originalString;
         }
@@ -280,7 +334,7 @@ $", _flags);
 
             //semVer = new SemanticVersion(
             //    NormalizeVersionValue(versionValue),
-            //    RemoveLeadingChar(match.Groups["Release"].Value),
+            //    RemoveLeadingChar(match.Groups["Prerelease"].Value),
             //    RemoveLeadingChar(match.Groups["Metadata"].Value),
             //    version.Replace(" ", ""));
   
@@ -362,31 +416,35 @@ $", _flags);
             }
 
             int packageReleaseVersionResult = PackageReleaseVersion.CompareTo(other.PackageReleaseVersion);
-            if (packageReleaseVersionResult != 0)
+
+            bool empty = string.IsNullOrEmpty(SpecialVersion);
+            bool otherEmpty = string.IsNullOrEmpty(other.SpecialVersion);
+            if (empty && otherEmpty)
             {
                 return packageReleaseVersionResult;
             }
-
-            bool empty = String.IsNullOrEmpty(SpecialVersion);
-            bool otherEmpty = String.IsNullOrEmpty(other.SpecialVersion);
-            if (empty && otherEmpty)
-            {
-                return 0;
-            }
-            else if (empty)
+            if (empty && !otherEmpty)
             {
                 return 1;
             }
-            else if (otherEmpty)
+            if (otherEmpty && !empty)
             {
                 return -1;
             }
-
+            
             // Compare the release labels using SemVer 2.0.0 comparision rules.
             var releaseLabels = SpecialVersion.Split('.');
             var otherReleaseLabels = other.SpecialVersion.Split('.');
 
-            return CompareReleaseLabels(releaseLabels, otherReleaseLabels);
+            var releasev2Result = CompareReleaseLabels(releaseLabels, otherReleaseLabels);
+            if (releasev2Result == 0)
+            {
+                return packageReleaseVersionResult;
+            }
+            else
+            {
+                return releasev2Result;
+            }
         }
 
         public static bool operator ==(SemanticVersion version1, SemanticVersion version2)
@@ -443,17 +501,21 @@ $", _flags);
                 // Normalize semver2 to match NuGet.Versioning
                 return ToNormalizedString();
             }
-            else
+            
+            // Remove metadata from the original string if it exists.
+            var plusIndex = _originalString.IndexOf('+');
+
+            if (plusIndex > -1)
             {
-                // Remove metadata from the original string if it exists.
-                var plusIndex = _originalString.IndexOf('+');
-
-                if (plusIndex > -1)
+                var versionMinusMetadata = _originalString.Substring(0, plusIndex);
+                if (PackageReleaseVersion !=0)
                 {
-                    return _originalString.Substring(0, plusIndex);
+                    versionMinusMetadata += "_" + PackageReleaseVersion.ToString();
                 }
-            }
 
+                return versionMinusMetadata;
+            }
+            
             return _originalString;
         }
 
@@ -461,7 +523,7 @@ $", _flags);
         /// Returns the normalized string representation of this instance of <see cref="SemanticVersion"/>.
         /// If the instance can be strictly parsed as a <see cref="SemanticVersion"/>, the normalized version
         /// string if of the format {major}.{minor}.{build}[-{special-version}]. If the instance has a non-zero
-        /// value for <see cref="Version.Revision"/>, the format is {major}.{minor}.{build}.{revision}[-{special-version}].
+        /// value for <see cref="System.Version.Revision"/>, the format is {major}.{minor}.{build}.{revision}[-{special-version}].
         /// </summary>
         /// <remarks>Build metadata is not included.</remarks>
         /// <returns>The normalized string representation.</returns>
@@ -515,9 +577,21 @@ $", _flags);
         {
             var s = ToNormalizedString();
 
-            if (!string.IsNullOrEmpty(Metadata))
+            if (!string.IsNullOrWhiteSpace(Metadata))
             {
+                var underscoreIndex = s.IndexOf('_');
+
+                if (underscoreIndex > -1)
+                {
+                    s = s.Substring(0, underscoreIndex);
+                }
+
                 s = string.Format(CultureInfo.InvariantCulture, "{0}+{1}", s, Metadata);
+
+                if (PackageReleaseVersion != 0)
+                {
+                    s += "_" + PackageReleaseVersion.ToString();
+                }
             }
 
             return s;
@@ -544,9 +618,11 @@ $", _flags);
         {
             return !Object.ReferenceEquals(null, other) &&
                    Version.Equals(other.Version) &&
-                   PackageReleaseVersion.Equals(other.PackageReleaseVersion) &&
                    SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase) &&
-                   Metadata.Equals(other.Metadata, StringComparison.OrdinalIgnoreCase);
+                   PackageReleaseVersion.Equals(other.PackageReleaseVersion);
+
+            // Rob: for some reason the devs did not want to compare metadata
+            // && Metadata.Equals(other.Metadata, StringComparison.OrdinalIgnoreCase)
         }
 
         public override bool Equals(object obj)
@@ -563,10 +639,11 @@ $", _flags);
                 hashCode = hashCode * 4567 + SpecialVersion.GetHashCode();
             }
 
-            if (Metadata != null)
-            {
-                hashCode = hashCode * 7890 + Metadata.GetHashCode();
-            }
+            // Rob: for some reason the devs did not want to compare metadata
+            //if (Metadata != null)
+            //{
+            //    hashCode = hashCode * 7890 + Metadata.GetHashCode();
+            //}
 
             if (PackageReleaseVersion != 0)
             {
