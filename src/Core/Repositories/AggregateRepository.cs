@@ -17,7 +17,7 @@ namespace NuGet
         private readonly ConcurrentBag<IPackageRepository> _failingRepositories = new ConcurrentBag<IPackageRepository>();
         private readonly IEnumerable<IPackageRepository> _repositories;
         private readonly Lazy<bool> _supportsPrereleasePackages;
-
+        private bool _ignoreFailingRepositories = false;
         private const string SourceValue = "(Aggregate source)";
 
         public override string Source
@@ -31,7 +31,15 @@ namespace NuGet
         /// </summary>
         public bool ResolveDependenciesVertically { get; set; }
 
-        public bool IgnoreFailingRepositories { get; set; }
+        
+        public bool IgnoreFailingRepositories { get { return _ignoreFailingRepositories; }
+            set
+            {
+                _ignoreFailingRepositories = value;
+                // ensure sub aggregate repos are set the same way
+                _repositories.OfType<AggregateRepository>().All(r => r.IgnoreFailingRepositories = value);
+            }
+        }
 
         /// <remarks>
         /// Iterating over Repositories returned by this property may throw regardless of IgnoreFailingRepositories.
@@ -49,24 +57,35 @@ namespace NuGet
             }
         }
 
-        public AggregateRepository(IEnumerable<IPackageRepository> repositories)
+        public AggregateRepository(IEnumerable<IPackageRepository> repositories): this(repositories, repositories.OfType<AggregateRepository>().All(r => r.IgnoreFailingRepositories))
+        {}
+
+        public AggregateRepository(IEnumerable<IPackageRepository> repositories, bool ignoreFailingRepositories)
         {
+            _ignoreFailingRepositories = ignoreFailingRepositories;
+            
             if (repositories == null)
             {
                 throw new ArgumentNullException("repositories");
             }
-            _repositories = Flatten(repositories);
+            
+            _repositories = Flatten(repositories, ignoreFailingRepositories);
+
+            if (ignoreFailingRepositories)
+            {
+                // ensure all are set true
+                repositories.OfType<AggregateRepository>().All(r => r.IgnoreFailingRepositories = true);
+            }
 
             Func<IPackageRepository, bool> supportsPrereleasePackages = Wrap(r => r.SupportsPrereleasePackages, defaultValue: true);
             _supportsPrereleasePackages = new Lazy<bool>(() => _repositories.All(supportsPrereleasePackages));
-            IgnoreFailingRepositories = repositories.OfType<AggregateRepository>().All(r => r.IgnoreFailingRepositories);
             Logger = repositories.OfType<AggregateRepository>().Select(r => r.Logger).FirstOrDefault(l => l != NullLogger.Instance);
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We want to suppress any exception that we may encounter.")]
         public AggregateRepository(IPackageRepositoryFactory repositoryFactory, IEnumerable<string> packageSources, bool ignoreFailingRepositories)
         {
-            IgnoreFailingRepositories = ignoreFailingRepositories;
+            _ignoreFailingRepositories = ignoreFailingRepositories;
             Func<string, IPackageRepository> createRepository = repositoryFactory.CreateRepository;
             if (ignoreFailingRepositories)
             {
@@ -200,13 +219,15 @@ namespace NuGet
                                                 IgnoreFailingRepositories);
         }
 
-        internal static IEnumerable<IPackageRepository> Flatten(IEnumerable<IPackageRepository> repositories)
+        internal static IEnumerable<IPackageRepository> Flatten(IEnumerable<IPackageRepository> repositories, bool ignoreFailingRepositories)
         {
             return repositories.SelectMany(repository =>
             {
                 var aggrgeateRepository = repository as AggregateRepository;
                 if (aggrgeateRepository != null)
                 {
+                    aggrgeateRepository.IgnoreFailingRepositories = ignoreFailingRepositories;
+
                     return aggrgeateRepository.Repositories.ToArray();
                 }
                 return new[] { repository };
