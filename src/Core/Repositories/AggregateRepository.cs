@@ -194,12 +194,12 @@ namespace NuGet
                     {
                         if (IgnoreFailingRepositories)
                         {
-                            Logger.Log(MessageLevel.Warning, "Not able to contact source {0}. Error was {1}", r.Source, ex.Message);
+                            Logger.Log(MessageLevel.Warning, "Not able to contact source '{0}'. Error was {1}", r.Source, ex.Message);
                             return Enumerable.Empty<IPackage>().AsQueryable();
                         }
                         else
                         {
-                             Logger.Log(MessageLevel.Error, "Not able to contact source {0}. Error was {1}", r.Source, ex.Message);
+                             Logger.Log(MessageLevel.Error, "Not able to contact source '{0}'. Error was {1}", r.Source, ex.Message);
                             throw;
                         }
                     }
