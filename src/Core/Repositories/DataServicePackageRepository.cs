@@ -157,7 +157,7 @@ namespace NuGet
         {
             get
             {
-                return _httpClient.Uri.OriginalString;
+                return _httpClient.OriginalUri.OriginalString;
             }
         }
 
