@@ -816,8 +816,13 @@ namespace NuGet
         {
             var fileName = _fileSystem.GetFullPath(_fileName);
 
-            // Global: ensure mutex is honored across TS sessions 
-            using (var mutex = new Mutex(false, "Global\\" + EncryptionUtility.GenerateUniqueToken(fileName)))
+            // Mutex names must not contain a slash, it's the namespace separator
+            var uniqueToken = EncryptionUtility.GenerateUniqueToken(fileName);
+            uniqueToken = uniqueToken.Replace('\\', '_');
+            uniqueToken = uniqueToken.Replace('/', '_');
+
+            // Global: ensure mutex is honored across TS sessions
+            using (var mutex = new Mutex(false, "Global\\" + uniqueToken))
             {
                 var owner = false;
                 try
