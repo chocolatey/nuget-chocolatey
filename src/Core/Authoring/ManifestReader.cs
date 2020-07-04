@@ -340,9 +340,17 @@ namespace NuGet
                 string target = file.GetOptionalAttributeValue("target").SafeTrim();
                 string exclude = file.GetOptionalAttributeValue("exclude").SafeTrim();
 
+                char separator = Path.DirectorySeparatorChar;
+
                 // Multiple sources can be specified by using semi-colon separated values. 
                 files.AddRange(from source in srcElement.Value.Trim(';').Split(';')
-                               select new ManifestFile { Source = source.SafeTrim(), Target = target.SafeTrim(), Exclude = exclude.SafeTrim() });
+                               select new ManifestFile 
+                               {
+                                   // Replace directory separator in the file src element to the one that is correct for the OS of the packing system.
+                                   Source = source.SafeTrim().Replace('/',separator).Replace('\u005c',separator),
+                                   Target = target.SafeTrim(),
+                                   Exclude = exclude.SafeTrim()
+                               });
             }
             return files;
         }
