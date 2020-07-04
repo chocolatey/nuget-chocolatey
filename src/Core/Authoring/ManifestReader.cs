@@ -64,7 +64,7 @@ namespace NuGet
             return manifestMetadata;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]    
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void ReadMetadataValue(ManifestMetadata manifestMetadata, XElement element, HashSet<string> allElements)
         {
             if (element.Value == null)
@@ -151,10 +151,10 @@ namespace NuGet
                     break;
                 case "conflicts":
                     manifestMetadata.Conflicts = value;
-                    break;             
+                    break;
                 case "softwareDisplayName":
                     manifestMetadata.SoftwareDisplayName = value;
-                    break;        
+                    break;
                 case "softwareDisplayVersion":
                     manifestMetadata.SoftwareDisplayVersion = value;
                     break;
@@ -274,7 +274,7 @@ namespace NuGet
                 return new List<ManifestDependencySet>();
             }
 
-            // Disallow the <dependencies> element to contain both <dependency> and 
+            // Disallow the <dependencies> element to contain both <dependency> and
             // <group> child elements. Unfortunately, this cannot be enforced by XSD.
             if (dependenciesElement.ElementsNoNamespace("dependency").Any() &&
                 dependenciesElement.ElementsNoNamespace("group").Any())
@@ -340,9 +340,17 @@ namespace NuGet
                 string target = file.GetOptionalAttributeValue("target").SafeTrim();
                 string exclude = file.GetOptionalAttributeValue("exclude").SafeTrim();
 
-                // Multiple sources can be specified by using semi-colon separated values. 
+                char separator = Path.DirectorySeparatorChar;
+
+                // Multiple sources can be specified by using semi-colon separated values.
                 files.AddRange(from source in srcElement.Value.Trim(';').Split(';')
-                               select new ManifestFile { Source = source.SafeTrim(), Target = target.SafeTrim(), Exclude = exclude.SafeTrim() });
+                               select new ManifestFile
+                               {
+                                   // Replace directory separator in the file src element to the one that is correct for the OS of the packing system.
+                                   Source = source.SafeTrim().Replace('/', separator).Replace('\u005c', separator),
+                                   Target = target.SafeTrim(),
+                                   Exclude = exclude.SafeTrim()
+                               });
             }
             return files;
         }
