@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -455,7 +455,7 @@ namespace NuGet
             {
                 if (manifest.Files == null)
                 {
-                    AddFiles(basePath, @"**\*", null);
+                    AddFiles(basePath, string.Format("**{0}*", Path.DirectorySeparatorChar), null);
                 }
                 else
                 {
