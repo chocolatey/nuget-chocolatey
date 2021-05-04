@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ namespace NuGet
         private const string DefaultContentType = "application/octet";
         internal const string ManifestRelationType = "manifest";
         private readonly bool _includeEmptyDirectories;
-        
+
         public PackageBuilder(string path, IPropertyProvider propertyProvider, bool includeEmptyDirectories)
             : this(path, Path.GetDirectoryName(path), propertyProvider, includeEmptyDirectories)
         {
@@ -331,7 +331,7 @@ namespace NuGet
         }
 
         private static int DetermineMinimumSchemaVersion(
-            Collection<IPackageFile> Files, 
+            Collection<IPackageFile> Files,
             Collection<PackageDependencySet> package)
         {
             if (HasContentFilesV2(Files) || HasIncludeExclude(package))
@@ -387,17 +387,17 @@ namespace NuGet
 
         private static bool HasIncludeExclude(IEnumerable<PackageDependencySet> dependencySets)
         {
-            return dependencySets.Any(dependencyGroup => 
+            return dependencySets.Any(dependencyGroup =>
                 dependencyGroup.Dependencies
                    .Any(dependency => dependency.Include != null || dependency.Exclude != null));
         }
 
         private static bool HasXdtTransformFile(ICollection<IPackageFile> contentFiles)
         {
-            return contentFiles.Any(file => 
+            return contentFiles.Any(file =>
                 file.Path != null &&
                 file.Path.StartsWith(Constants.ContentDirectory + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) &&
-                (file.Path.EndsWith(".install.xdt", StringComparison.OrdinalIgnoreCase) || 
+                (file.Path.EndsWith(".install.xdt", StringComparison.OrdinalIgnoreCase) ||
                  file.Path.EndsWith(".uninstall.xdt", StringComparison.OrdinalIgnoreCase)));
         }
 
@@ -433,8 +433,8 @@ namespace NuGet
 
             foreach (var reference in packageAssemblyReferences.SelectMany(p => p.References))
             {
-                if (!libFiles.Contains(reference) && 
-                    !libFiles.Contains(reference + ".dll") && 
+                if (!libFiles.Contains(reference) &&
+                    !libFiles.Contains(reference + ".dll") &&
                     !libFiles.Contains(reference + ".exe") &&
                     !libFiles.Contains(reference + ".winmd"))
                 {
@@ -568,7 +568,7 @@ namespace NuGet
             if (_includeEmptyDirectories)
             {
                 // we only allow empty directories which are legit framework folders.
-                // Folders for nuget v3 should be included here also since this part of nuget.core is still used 
+                // Folders for nuget v3 should be included here also since this part of nuget.core is still used
                 // by nuget.exe 3.3.0.
                 searchFiles.RemoveAll(file => file.TargetFramework == null
                                              && Path.GetFileName(file.TargetPath) == Constants.PackageEmptyFileName
