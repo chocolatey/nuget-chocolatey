@@ -44,7 +44,19 @@ namespace NuGet
             _fileSystem = fileSystem;
             _fileName = fileName;
             XDocument conf = null;
-            ExecuteSynchronized(() => conf = XmlUtility.GetOrCreateDocument("configuration", _fileSystem, _fileName));
+
+            // As Chocolatey, we never want to create the NuGet.Config file, as this is not used by Chocolatey at all.
+            // As such, rather than GetOrCreateDocument, if the filepath doesn't exist, simply return the default empty
+            // XDocument, which is exactly what would have been returned after creating the file.
+            if (_fileSystem.FileExists(_fileName))
+            {
+                ExecuteSynchronized(() => conf = XmlUtility.GetDocument(_fileSystem, _fileName));
+            }
+            else
+            {
+                conf = new XDocument(new XElement("configuration"));
+            }
+
             _config = conf;
             _isMachineWideSettings = isMachineWideSettings;
         }
