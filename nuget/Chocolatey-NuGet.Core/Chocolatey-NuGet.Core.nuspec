@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata>
+    <id>Chocolatey-NuGet.Core</id>
+    <version>2.11.0.20190305</version>
+    <owners>Gary Ewan Park</owners>
+    <title>Chocolatey NuGet Core</title>
+    <authors>Chocolatey Software, Inc</authors>
+    <projectUrl>https://github.com/chocolatey/nuget-chocolatey</projectUrl>
+    <license type="expression">Apache-2.0</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>2017-2019 Chocolatey Software, Inc, 2011- 2017 RealDimensions Software, LLC</copyright>
+    <tags>apt-get machine repository chocolatey</tags>
+    <summary>NuGet Enhanced for Chocolatey</summary>
+    <description>NuGet Enhanced for Chocolatey</description>
+    <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+    </dependencies>
+  </metadata>
+</package>
