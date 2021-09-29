@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Security;
 using NuGet.Resources;
 
 namespace NuGet
@@ -302,14 +303,14 @@ namespace NuGet
                 WriteFiles(package);
 
                 // Copy the metadata properties back to the package
-                package.PackageProperties.Creator = String.Join(",", Authors);
-                package.PackageProperties.Description = Description;
+                package.PackageProperties.Creator = SecurityElement.Escape(String.Join(",", Authors));
+                package.PackageProperties.Description = SecurityElement.Escape(Description);
                 package.PackageProperties.Identifier = Id;
                 package.PackageProperties.Version = Version.ToString();
-                package.PackageProperties.Language = Language;
-                package.PackageProperties.Keywords = ((IPackageMetadata)this).Tags;
-                package.PackageProperties.Title = Title;
-                package.PackageProperties.LastModifiedBy = CreatorInfo();
+                package.PackageProperties.Language = SecurityElement.Escape(Language);
+                package.PackageProperties.Keywords = SecurityElement.Escape(((IPackageMetadata)this).Tags);
+                package.PackageProperties.Title = SecurityElement.Escape(Title);
+                package.PackageProperties.LastModifiedBy = SecurityElement.Escape(CreatorInfo());
             }
         }
 
