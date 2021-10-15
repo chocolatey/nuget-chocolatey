@@ -203,3 +203,5 @@ DebugConstants.cs
 *.userprefs
 src/VsExtension/source.extension.vsixmanifest
 !packages/Microsoft.Web.Xdt.1.0.0-alpha/
+
+nuget/Chocolatey-NuGet.Core/lib/net4
