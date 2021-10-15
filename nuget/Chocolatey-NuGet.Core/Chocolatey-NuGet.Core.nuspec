@@ -21,4 +21,8 @@
       <group targetFramework=".NETFramework4.0" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="lib/net4/NuGet.Core.dll" target="lib/net4" />
+    <file src="lib/net4/NuGet.Core.pdb" target="lib/net4" />
+  </files>
 </package>
