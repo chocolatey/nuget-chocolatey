@@ -9,6 +9,7 @@ using System.IO.Packaging;
 using System.Linq;
 using System.Runtime.Versioning;
 using NuGet.Resources;
+using Ionic.Zip;
 
 namespace NuGet
 {
@@ -249,41 +250,58 @@ namespace NuGet
                 _expandedFolderPath = GetExpandedFolderPath();
             }
 
-            using (Stream stream = GetStream())
+            string packageFullPath = _fileSystem.GetFullPath(_packagePath);
+            // This checks if the package is a zip package that DotNetZip is capable of reading.
+            // This normally should be the case in operation within Chocolatey,
+            // but when running some of the tests in this solution, a mock of a zip file is used, which DotNetZip is unable to handle.
+            // The old behavior is kept as a fallback if the package can't be read
+            // Use the package full path because DotNetZip is not happy about reading Nupkgs from a pre-existing stream for some reason.
+            if (ZipFile.IsZipFile(packageFullPath, false))
             {
-                Package package = Package.Open(stream);
-                // unzip files inside package
-                var files = from part in package.GetParts()
-                            where ZipPackage.IsPackageFile(part, package.PackageProperties.Identifier)
-                            select part;
+                string packageId;
 
-                // now copy all package's files to disk
-                foreach (PackagePart file in files)
+                // Even if we are using DotNetZip, the package name is still needed, and the easiest way to get that is via the system Packaging code.
+                using (Stream stream = GetStream())
                 {
-                    string path = UriUtility.GetPath(file.Uri);
-                    string filePath = Path.Combine(_expandedFolderPath, path);
+                    Package package = Package.Open(stream);
+                    packageId = package.PackageProperties.Identifier;
+                    package.Close();
+                }
 
-                    bool copyFile = true;
-                    if (_expandedFileSystem.FileExists(filePath))
+                // unzip files inside package
+                using (var zip = ZipFile.Read(packageFullPath))
+                {
+                    zip.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
+
+                    // now copy all package's files to disk
+                    foreach (var file in zip)
                     {
-                        using (Stream partStream = file.GetStream(),
-                                      targetStream = _expandedFileSystem.OpenFile(filePath))
+                        if (file.IsDirectory) continue;
+                        if (!ZipPackage.IsPackageFile(file.FileName, packageId)) continue;
+
+                        //Normalizes path separator for each platform.
+                        char separator = Path.DirectorySeparatorChar;
+                        string path = Uri.UnescapeDataString(file.FileName).Replace('/', separator).Replace('\u005c', separator);
+                        string filePath = Path.Combine(_expandedFolderPath, path);
+
+                        bool copyFile = true;
+                        if (_expandedFileSystem.FileExists(filePath))
                         {
-                            // if the target file already exists,
-                            // don't copy file if the lengths are equal.
-                            copyFile = partStream.Length != targetStream.Length;
+                            using (Stream targetStream = _expandedFileSystem.OpenFile(filePath))
+                            {
+                                // if the target file already exists,
+                                // don't copy file if the lengths are equal.
+                                copyFile = file.UncompressedSize != targetStream.Length;
+                            }
                         }
-                    }
 
-                    if (copyFile)
-                    {
-                        using (Stream partStream = file.GetStream())
+                        if (copyFile)
                         {
                             try
                             {
                                 using (Stream targetStream = _expandedFileSystem.CreateFile(filePath))
                                 {
-                                    partStream.CopyTo(targetStream);
+                                    file.Extract(targetStream);
                                 }
                             }
                             catch (Exception)
@@ -291,15 +309,71 @@ namespace NuGet
                                 // if the file is read-only or has an access denied issue, we just ignore it
                             }
                         }
+
+                        var packageFile = new PhysicalPackageFile
+                        {
+                            SourcePath = _expandedFileSystem.GetFullPath(filePath),
+                            TargetPath = path
+                        };
+
+                        _files[path] = packageFile;
                     }
+                }
+            }
+            else
+            {
+                using (Stream stream = GetStream())
+                {
+                    Package package = Package.Open(stream);
+                    // unzip files inside package
+                    var files = from part in package.GetParts()
+                        where ZipPackage.IsPackageFile(part, package.PackageProperties.Identifier)
+                        select part;
 
-                    var packageFile = new PhysicalPackageFile
+                    // now copy all package's files to disk
+                    foreach (PackagePart file in files)
                     {
-                        SourcePath = _expandedFileSystem.GetFullPath(filePath),
-                        TargetPath = path
-                    };
+                        string path = UriUtility.GetPath(file.Uri);
+                        string filePath = Path.Combine(_expandedFolderPath, path);
 
-                    _files[path] = packageFile;
+                        bool copyFile = true;
+                        if (_expandedFileSystem.FileExists(filePath))
+                        {
+                            using (Stream partStream = file.GetStream(),
+                                   targetStream = _expandedFileSystem.OpenFile(filePath))
+                            {
+                                // if the target file already exists,
+                                // don't copy file if the lengths are equal.
+                                copyFile = partStream.Length != targetStream.Length;
+                            }
+                        }
+
+                        if (copyFile)
+                        {
+                            using (Stream partStream = file.GetStream())
+                            {
+                                try
+                                {
+                                    using (Stream targetStream = _expandedFileSystem.CreateFile(filePath))
+                                    {
+                                        partStream.CopyTo(targetStream);
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    // if the file is read-only or has an access denied issue, we just ignore it
+                                }
+                            }
+                        }
+
+                        var packageFile = new PhysicalPackageFile
+                        {
+                            SourcePath = _expandedFileSystem.GetFullPath(filePath),
+                            TargetPath = path
+                        };
+
+                        _files[path] = packageFile;
+                    }
                 }
             }
         }

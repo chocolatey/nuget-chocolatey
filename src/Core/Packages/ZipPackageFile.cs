@@ -11,6 +11,11 @@ namespace NuGet
         private readonly Func<Stream> _streamFactory;
         private readonly FrameworkName _targetFramework;
 
+        public ZipPackageFile(string path, Stream stream)
+            : this(path, stream.ToStreamFactory())
+        {
+        }
+
         public ZipPackageFile(PackagePart part)
             : this(UriUtility.GetPath(part.Uri), part.GetStream().ToStreamFactory())
         {

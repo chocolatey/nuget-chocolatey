@@ -226,6 +226,9 @@
     <Compile Include="Utility\VersionSpec.cs" />
     <Compile Include="Utility\WebRequestEventArgs.cs" />
     <Compile Include="FileModifiers\XdtTransformer.cs" />
+    <Reference Include="DotNetZip, Version=1.16.0.0">
+      <HintPath>..\..\packages\DotNetZip.1.16.0\lib\net40\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\lib\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
