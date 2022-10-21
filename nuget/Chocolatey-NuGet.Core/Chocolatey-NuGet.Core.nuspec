@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata>
     <id>Chocolatey-NuGet.Core</id>
-    <version>2.11.0.20211014</version>
+    <version>0.1.0</version>
     <owners>Gary Ewan Park</owners>
     <title>Chocolatey NuGet Core</title>
     <authors>Chocolatey Software, Inc</authors>
@@ -14,8 +14,7 @@
     <summary>NuGet Enhanced for Chocolatey</summary>
     <description>NuGet Enhanced for Chocolatey</description>
     <releaseNotes>
-- Fix - Building a package on Linux fails if the description has encoded xml special character(s)
-- Fix - Running choco push on Linux results in System.IO.IOException - "The filename, directory name, or volume label syntax is incorrect"
+See all - https://github.com/chocolatey/nuget-chocolatey/releases
     </releaseNotes>
     <dependencies>
       <group targetFramework=".NETFramework4.0" />
