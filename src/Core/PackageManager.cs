@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -159,9 +160,89 @@ namespace NuGet
             Execute(package, installerWalker);
         }
 
+        private static int ComparePackageOperations(PackageOperation left, PackageOperation right)
+        {
+            if (left.Package.DependencySets.SelectMany(d => d.Dependencies).Any(c => c.Id == right.Package.Id))
+            {
+                return 1;
+            }
+
+            if (right.Package.DependencySets.SelectMany(d => d.Dependencies).Any(c => c.Id == left.Package.Id))
+            {
+                return -1;
+            }
+
+            return left.Package.DependencySets.SelectMany(d => d.Dependencies).Count() - right.Package.DependencySets.SelectMany(d => d.Dependencies).Count();
+        }
+
+        private static List<PackageOperation> GetOperationsInDependencyOrder(List<PackageOperation> packageOperations)
+        {
+            var orderedPackageOperations = new List<PackageOperation>();
+
+            packageOperations.Sort(ComparePackageOperations);
+
+            foreach (var packageOperation in packageOperations)
+            {
+                var insertIndex = -1;
+
+                foreach (var dependency in packageOperation.Package.DependencySets.SelectMany(d => d.Dependencies))
+                {
+                    var existingPackage = orderedPackageOperations.LastOrDefault(p => String.Equals(p.Package.Id, dependency.Id, StringComparison.OrdinalIgnoreCase));
+
+                    if (existingPackage != null)
+                    {
+                        var index = orderedPackageOperations.IndexOf(existingPackage);
+                        if (index > insertIndex)
+                        {
+                            insertIndex = index + 1;
+                        }
+                    }
+                }
+
+                var existingPackageCheck = orderedPackageOperations.FirstOrDefault(p => String.Equals(p.Package.Id, packageOperation.Package.Id, StringComparison.OrdinalIgnoreCase));
+                if (existingPackageCheck != null)
+                {
+                    if (existingPackageCheck.Action == PackageAction.Install && packageOperation.Action == PackageAction.Uninstall)
+                    {
+                        var index = orderedPackageOperations.IndexOf(existingPackageCheck);
+                        if (index > -1)
+                        {
+                            insertIndex = index;
+                        }
+                    }
+                    else if(existingPackageCheck.Action == PackageAction.Uninstall && packageOperation.Action == PackageAction.Install)
+                    {
+                        var index = orderedPackageOperations.IndexOf(existingPackageCheck);
+                        if (index > -1)
+                        {
+                            insertIndex = index + 1;
+                        }
+                    }
+                }
+
+                if (insertIndex >= 0)
+                {
+                    orderedPackageOperations.Insert(insertIndex, packageOperation);
+                }
+                else
+                {
+                    orderedPackageOperations.Add(packageOperation);
+                }
+            }
+
+            return orderedPackageOperations;
+        }
+
         private void Execute(IPackage package, IPackageOperationResolver resolver)
         {
-            var operations = resolver.ResolveOperations(package);
+            var operations = resolver.ResolveOperations(package).ToList();
+
+            var packageIds = new[]{ "chocolatey", "chocolateygui", "chocolatey-agent", "chocolateygui.extension", "chocolatey.extension" };
+            if (packageIds.Contains(package.Id, StringComparer.OrdinalIgnoreCase))
+            {
+                operations = GetOperationsInDependencyOrder(operations);
+            }
+
             if (operations.Any())
             {
                 foreach (PackageOperation operation in operations)
