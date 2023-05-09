@@ -46,6 +46,7 @@ namespace NuGet.Server.DataServices
             PackageHash = derivedData.PackageHash;
             PackageHashAlgorithm = "SHA512";
             PackageSize = derivedData.PackageSize;
+            PackageSource = derivedData.PackageSource;
             LastUpdated = derivedData.LastUpdated.UtcDateTime;
             Published = derivedData.Created.UtcDateTime;
             Path = derivedData.Path;
@@ -227,6 +228,12 @@ namespace NuGet.Server.DataServices
             set;
         }
 
+        public string PackageSource
+        {
+            get;
+            set;
+        } 
+        
         public string PackageHash
         {
             get;

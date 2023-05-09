@@ -225,6 +225,7 @@ namespace NuGet
             set;
         }
 
+        public string PackageSource { get; set; }
         public string PackageHash { get; set; }
         public string PackageHashAlgorithm { get; set; }
 
