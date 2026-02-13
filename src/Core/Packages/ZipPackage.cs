@@ -137,7 +137,7 @@ namespace NuGet
                         //Normalizes path separator for each platform.
                         char separator = Path.DirectorySeparatorChar;
                         string path = Uri.UnescapeDataString(file.FileName).Replace('/', separator).Replace('\u005c', separator);
-                        string targetPath = Path.Combine(extractPath, path);
+                        string targetPath = SafelyCombinePaths(extractPath, path);
 
                         using (Stream targetStream = fileSystem.CreateFile(targetPath))
                         {
@@ -157,7 +157,7 @@ namespace NuGet
                 {
                     var relativePath = UriUtility.GetPath(part.Uri);
 
-                    var targetPath = Path.Combine(extractPath, relativePath);
+                    var targetPath = SafelyCombinePaths(extractPath, relativePath);
                     using (var partStream = part.GetStream())
                     {
                         fileSystem.AddFile(targetPath, partStream);
