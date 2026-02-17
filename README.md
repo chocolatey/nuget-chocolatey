@@ -1,6 +1,6 @@
 ## NuGet Enhanced for Chocolatey
 
-This repository contains a forked version of NuGet, which has been enhanced to work with Chocolatey, the Package Manager for Windows.
+This repository contains a forked version of [NuGet](https://github.com/NuGet/NuGet2), which has been enhanced to work with Chocolatey, the Package Manager for Windows.
 
 This includes, for example, modifications to the nuspec file to include additional properties that are specific to how Chocolatey works.
 
