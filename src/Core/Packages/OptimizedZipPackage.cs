@@ -164,7 +164,7 @@ namespace NuGet
             {
                 using (var stream = item.Value.GetStream())
                 {
-                    fileSystem.AddFile(Path.Combine(extractPath, item.Value.TargetPath), stream);
+                    fileSystem.AddFile(SafelyCombinePaths(extractPath, item.Value.TargetPath), stream);
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace NuGet
                         //Normalizes path separator for each platform.
                         char separator = Path.DirectorySeparatorChar;
                         string path = Uri.UnescapeDataString(file.FileName).Replace('/', separator).Replace('\u005c', separator);
-                        string filePath = Path.Combine(_expandedFolderPath, path);
+                        string filePath = SafelyCombinePaths(_expandedFolderPath, path);
 
                         bool copyFile = true;
                         if (_expandedFileSystem.FileExists(filePath))
@@ -334,7 +334,7 @@ namespace NuGet
                     foreach (PackagePart file in files)
                     {
                         string path = UriUtility.GetPath(file.Uri);
-                        string filePath = Path.Combine(_expandedFolderPath, path);
+                        string filePath = SafelyCombinePaths(_expandedFolderPath, path);
 
                         bool copyFile = true;
                         if (_expandedFileSystem.FileExists(filePath))

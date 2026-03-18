@@ -1,6 +1,6 @@
 ## NuGet Enhanced for Chocolatey
 
-This repository contains a forked version of NuGet, which has been enhanced to work with Chocolatey, the Package Manager for Windows.
+This repository contains a forked version of [NuGet](https://github.com/NuGet/NuGet2), which has been enhanced to work with Chocolatey, the Package Manager for Windows.
 
 This includes, for example, modifications to the nuspec file to include additional properties that are specific to how Chocolatey works.
 
@@ -40,3 +40,7 @@ To create a NuGet package which can then be consumed within the chocolatey/choco
 * Run the following command in chocolatey/choco repository to bring this package into the lib folder there `nuget install Chocolatey-NuGet.Core -Source <URL_to_repository>`, and then manually update the csproj files to target new location in lib folder.
 * Delete previous Chocolatey-NuGet.Core folder from lib folder
 * Build chocolatey/choco and ensure everything is working as expected
+
+### Skipping Tests
+
+If you want to skip running the tests, set the environment variable `DisableRunningUnitTests` to `true`.

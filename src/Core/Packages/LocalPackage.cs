@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -447,6 +448,34 @@ namespace NuGet
         public void OverrideOriginalVersion(SemanticVersion version)
         {
             if (version != null) Version = version;
+        }
+
+        protected string NormalizeDirectoryPath(string path)
+        {
+            path = Uri.UnescapeDataString(path.Replace('/', Path.DirectorySeparatorChar));
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+            {
+                path += Path.DirectorySeparatorChar;
+            }
+
+            return Path.GetFullPath(path);
+        }
+
+        protected string SafelyCombinePaths(string basePath, string relativePath)
+        {
+            var normalizedBasePath = NormalizeDirectoryPath(basePath);
+            var normalizedRelativePath = Uri.UnescapeDataString(relativePath.Replace('/', Path.DirectorySeparatorChar));
+            var combinedPath = Path.Combine(basePath, normalizedRelativePath);
+            var normalizedCombinedPath = NormalizeDirectoryPath(combinedPath);
+
+            // Determine if we would inadvertently end up outside of the base path.
+            if (!normalizedCombinedPath.StartsWith(normalizedBasePath, StringComparison.OrdinalIgnoreCase) || normalizedCombinedPath.Length == normalizedBasePath.Length)
+            {
+                throw new ApplicationException(string.Format("The package contains an entry '{0}' which is unsafe for extraction.", relativePath));
+            }
+
+            // Return the combined path as it will be relative.
+            return combinedPath;
         }
     }
 }
