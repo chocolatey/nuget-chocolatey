@@ -12,6 +12,7 @@
             LastUpdated = p.LastUpdated,
          */
 
+        string PackageSource { get; }
         string PackageHash { get; }
         string PackageHashAlgorithm { get; }
         long PackageSize { get; }
